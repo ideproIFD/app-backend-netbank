@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.ResetRepository">
+
+    <resultMap type="Reset" id="result">
+        <id property="token" column="idrsttken"/>
+        <result property="usuario" column="idrstusrn"/>
+        <result property="fecha" column="idrstfreg"/>
+        <result property="horaInicio" column="idrsthini"/>
+        <result property="horaFin" column="idrsthfin"/>
+    </resultMap>
+
+    <insert id="saveReset" parameterType="Reset">
+        INSERT INTO idrst (idrsttken, idrstusrn, idrstfreg, idrsthini, idrsthfin)
+        VALUES (#{param1}, #{param2}, today, current::datetime hour to SECOND, current::datetime hour to SECOND + (select idpconabre from idpcon where idpconpref = 8 and idpconcorr = 1) units minute);
+    </insert>
+
+    <select id="findByTokenVigente" resultType="Reset" resultMap="result">
+        SELECT trim(idrsttken)as idrsttken, idrstusrn, idrstfreg, idrsthini, idrsthfin FROM idrst where idrsttken like #{param1} and to_char(current::datetime hour to SECOND, current::datetime hour to SECOND) &lt;= idrsthfin;
+    </select>
+
+    <select id="listAll" resultType="Reset" resultMap="result">
+        SELECT trim(idrsttken) idrsttken, idrstusrn, idrstfreg, idrsthini, idrsthfin FROM idrst
+    </select>
+
+</mapper>

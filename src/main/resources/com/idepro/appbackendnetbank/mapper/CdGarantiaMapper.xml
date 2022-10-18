@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.CdGarantiaRepository">
+
+    <resultMap type="CdGarantia" id="result">
+        <result property="idGarantia" column="gbtgactga"/>
+        <result property="descripcion" column="gbtgadesc"/>
+    </resultMap>
+
+    <select id="listAll" resultType="CdGarantia" resultMap="result">
+       select gbtgactga, trim(gbtgadesc) as gbtgadesc from gbtga order by 1
+    </select>
+
+</mapper>

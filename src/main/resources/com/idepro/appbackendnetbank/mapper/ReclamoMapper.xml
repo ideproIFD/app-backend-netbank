@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.ReclamoRepository">
+
+    <resultMap type="Reclamo" id="result">
+        <result property="numeroReclamo" column="remrenrec"/>
+        <result property="idTipologia" column="remrectip"/>
+        <result property="tipologia" column="tipologia"/>
+        <result property="idSubTipologia" column="remrecsti"/>
+        <result property="subTipologia" column="sub_tipologia"/>
+        <result property="tipoEntidad" column="remretent"/>
+        <result property="codigoEntidad" column="remrecent"/>
+        <result property="fechaReclamo" column="remrefrec"/>
+        <result property="tipoOficina" column="remretofi"/>
+        <result property="tipoOficinaDescripcion" column="tipo_oficina_descripcion"/>
+        <result property="localidadOficina" column="remrelofi"/>
+        <result property="localidadOficinaDescripcion" column="localidad_oficina_descripcion"/>
+        <result property="glosa" column="remreglo1"/>
+        <result property="glosaAdicional" column="remreglo2"/>
+        <result property="importe" column="remremcom"/>
+        <result property="moneda" column="remrecmon"/>
+        <result property="monedaDescripcion" column="moneda_descripcion"/>
+        <result property="monedaExtranjera" column="remrecmoe"/>
+        <result property="monedaExtranjeraDescripcion" column="moneda_extranjera_descripcion"/>
+        <result property="plazoDias" column="remreplac"/>
+        <result property="plazoOriginalDias" column="remreplao"/>
+        <result property="fechaVencimientoActual" column="remrefvac"/>
+        <result property="fechaVencimientoOriginal" column="remrefvpo"/>
+        <result property="usuarioContacto" column="remreucon"/>
+        <result property="responsable" column="remrepcon"/>
+        <result property="fechaSolucion" column="remrefsol"/>
+        <result property="citeDocumento" column="remrecitr"/>
+        <result property="descripcionRespuesta" column="remreglor"/>
+        <result property="codigoSolucion" column="remrecsol"/>
+        <result property="estado" column="remrestat"/>
+        <result property="estadoDescripcion" column="estado_descripcion"/>
+        <result property="contacto" column="remrerasi"/>
+        <result property="tipoDocumento" column="remretdid"/>
+        <result property="numeroDocumento" column="remrendid"/>
+        <result property="correlativoDocumento" column="remrecndi"/>
+        <result property="extencionDocumento" column="remrepdid"/>
+        <result property="nombre" column="remrenomb"/>
+        <result property="apellidos" column="remreapel"/>
+        <result property="direccion1" column="remredir1"/>
+        <result property="direccion2" column="remredir2"/>
+        <result property="telefonoFijo" column="remretfij"/>
+        <result property="telefonoCelular" column="remretcel"/>
+        <result property="email" column="remremail"/>
+        <result property="plaza" column="remreplaz"/>
+        <result property="agencia" column="remreagen"/>
+        <result property="marcaBaja" column="remremrcb"/>
+        <result property="usuario" column="remreuser"/>
+        <result property="fechaProceso" column="remrefpro"/>
+        <result property="hora" column="remrehora"/>
+        <result property="codigoAsfi" column="remreasfi"/>
+        <result property="tipoReclamante" column="idrectage"/>
+        <result property="numeroTestimonio" column="idrecntes"/>
+        <result property="representanteLegal" column="idrecrleg"/>
+        <result property="fecha" column="idrecfech"/>
+        <result property="modoRespuesta" column="idrecrpta"/>
+        <result property="tipoCredito" column="idrectcre"/>
+        <result property="nombreOficial" column="idrecores"/>
+    </resultMap>
+
+    <insert id="saveReclamo" parameterType="Reclamo">
+        insert into remre(remrenrec,remrectip,remrecsti,remretent,remrecent,remrefrec,remretofi,remrelofi,remreglo1,remreglo2,remremcom,remrecmon,remrecmoe,remreplac,remreplao,remrefvac,remrefvpo,remreucon,remrepcon,remrefsol,remrecitr,remreglor,remrecsol,remrestat,remrerasi,remretdid,remrendid,remrecndi,remrepdid,remrenomb,remreapel,remredir1,remredir2,remretfij,remretcel,remremail,remreplaz,remreagen,remremrcb,remreuser,remrefpro,remrehora,remreasfi)
+        values ((select max(remrenrec) + 1 from remre),
+#{param1},
+#{param2},
+'27',
+'009',
+(select gbpmtfdia from gbpmt),
+(select min(rerestofi) from reres where reresstat = 0 and rereslofi = #{param3}),
+#{param3},
+#{param4},
+'',
+#{param5},
+#{param6},
+#{param7},
+(case when #{param1} = 42 then 2 else 5 end),
+(case when #{param1} = 42 then 2 else 5 end),
+(select gbpmtfdia from gbpmt)+(case when #{param1} = 42  then 2 else 5 end),
+(select gbpmtfdia from gbpmt)+(case when #{param1} = 42  then 2 else 5 end),
+(select min(rerescres) from reres where reresstat = 0 and rereslofi = #{param3}),
+(select upper(adusrnomb) from adusr where adusrusrn like (select min(rerescres) from reres where reresstat = 0 and rereslofi = #{param3})),
+null,
+null,
+null,
+null,
+1,
+(select min(rerescres) from reres where reresstat = 0 and rereslofi = #{param3}),
+#{param8},
+#{param9},
+(select max(reagecndi) from reage where reagetdid like #{param8} and reagendid like #{param9}),
+#{param10},
+#{param11},
+#{param12},
+#{param13},
+#{param14},
+#{param15},
+#{param16},
+#{param17},
+20,
+1,
+0,
+'TI2',
+TODAY,
+current::datetime hour to SECOND,
+null
+)
+    </insert>
+
+    <select id="findMaxNumeroReclamoByNumeroDocumento" resultType="Reclamo" resultMap="result">
+        select remrenrec,remrectip,(select trim(resutdesc) from resut where resutcsti = 0 and resutctip = remrectip)as tipologia,remrecsti,(select trim(resutdesc) from resut where resutctip = remrectip and resutcsti = remrecsti)as sub_tipologia,trim(remretent) as remretent,trim(remrecent) as remrecent,remrefrec,remretofi,(select trim(recondesc) from recon where reconpref = 1 and reconcorr = remretofi)as tipo_oficina_descripcion,trim(remrelofi) as remrelofi,(select trim(recondesc) from recon where reconpref = 2 and reconcorr = remrelofi)as localidad_oficina_descripcion,trim(remreglo1) as remreglo1,trim(remreglo2) as remreglo2,remremcom,trim(remrecmon) as remrecmon,(select trim(recondesc) from recon where reconpref = 5 and reconcorr = remrecmon)as moneda_descripcion,trim(remrecmoe) as remrecmoe,(select trim(recondesc) from recon where reconpref = 6 and reconcorr = remrecmoe)as moneda_extranjera_descripcion,remreplac,remreplao,remrefvac,remrefvpo,trim(remreucon) as remreucon,trim(remrepcon) as remrepcon,remrefsol,trim(remrecitr) as remrecitr,trim(remreglor) as remreglor,trim(remrecsol) as remrecsol,remrestat,(select trim(recondesc) from recon where reconpref = 11 and reconcorr = remrestat)as estado_descripcion,trim(remrerasi) as remrerasi,trim(remretdid) as remretdid,trim(remrendid) as remrendid,trim(remrecndi) as remrecndi,trim(remrepdid) as remrepdid,trim(remrenomb) as remrenomb,trim(remreapel) as remreapel,trim(remredir1) as remredir1,trim(remredir2) as remredir2,trim(remretfij) as remretfij,trim(remretcel) as remretcel,trim(remremail) as remremail,remreplaz,remreagen,remremrcb,trim(remreuser) as remreuser,remrefpro,trim(remrehora) as remrehora,trim(remreasfi) as remreasfi
+               ,trim(idrectage)as idrectage,idrecntes, trim(idrecrleg)as idrecrleg, idrecfech, trim(idrecrpta)as idrecrpta, trim(idrectcre)as idrectcre, trim(idrecores)as idrecores, idrechora, idrecfpro
+        from remre left join idrec on remrenrec = idrecnrec
+        where remrenrec = (select max(remrenrec) from remre where remrendid like #{param1});
+    </select>
+
+    <select id="listReclamoByEmail" resultType="Reclamo" resultMap="result">
+        select remrenrec,remrectip,(select trim(resutdesc) from resut where resutcsti = 0 and resutctip = remrectip)as tipologia,remrecsti,(select trim(resutdesc) from resut where resutctip = remrectip and resutcsti = remrecsti)as sub_tipologia,trim(remretent) as remretent,trim(remrecent) as remrecent,remrefrec,remretofi,(select trim(recondesc) from recon where reconpref = 1 and reconcorr = remretofi)as tipo_oficina_descripcion,trim(remrelofi) as remrelofi,(select trim(recondesc) from recon where reconpref = 2 and reconcorr = remrelofi)as localidad_oficina_descripcion,trim(remreglo1) as remreglo1,trim(remreglo2) as remreglo2,remremcom,trim(remrecmon) as remrecmon,(select trim(recondesc) from recon where reconpref = 5 and reconcorr = remrecmon)as moneda_descripcion,trim(remrecmoe) as remrecmoe,(select trim(recondesc) from recon where reconpref = 6 and reconcorr = remrecmoe)as moneda_extranjera_descripcion,remreplac,remreplao,remrefvac,remrefvpo,trim(remreucon) as remreucon,trim(remrepcon) as remrepcon,remrefsol,trim(remrecitr) as remrecitr,trim(remreglor) as remreglor,trim(remrecsol) as remrecsol,remrestat,(select trim(recondesc) from recon where reconpref = 11 and reconcorr = remrestat)as estado_descripcion,trim(remrerasi) as remrerasi,trim(remretdid) as remretdid,trim(remrendid) as remrendid,trim(remrecndi) as remrecndi,trim(remrepdid) as remrepdid,trim(remrenomb) as remrenomb,trim(remreapel) as remreapel,trim(remredir1) as remredir1,trim(remredir2) as remredir2,trim(remretfij) as remretfij,trim(remretcel) as remretcel,trim(remremail) as remremail,remreplaz,remreagen,remremrcb,trim(remreuser) as remreuser,remrefpro,trim(remrehora) as remrehora,trim(remreasfi) as remreasfi
+               ,trim(idrectage)as idrectage,idrecntes, trim(idrecrleg)as idrecrleg, idrecfech, trim(idrecrpta)as idrecrpta, trim(idrectcre)as idrectcre, trim(idrecores)as idrecores, idrechora, idrecfpro
+        from remre left join idrec on remrenrec = idrecnrec
+        where remremail like #{param1}
+        order by remrenrec desc;
+    </select>
+
+    <select id="listReclamoByNumeroDocumento" resultType="Reclamo" resultMap="result">
+        select remrenrec,remrectip,(select trim(resutdesc) from resut where resutcsti = 0 and resutctip = remrectip)as tipologia,remrecsti,(select trim(resutdesc) from resut where resutctip = remrectip and resutcsti = remrecsti)as sub_tipologia,trim(remretent) as remretent,trim(remrecent) as remrecent,remrefrec,remretofi,(select trim(recondesc) from recon where reconpref = 1 and reconcorr = remretofi)as tipo_oficina_descripcion,trim(remrelofi) as remrelofi,(select trim(recondesc) from recon where reconpref = 2 and reconcorr = remrelofi)as localidad_oficina_descripcion,trim(remreglo1) as remreglo1,trim(remreglo2) as remreglo2,remremcom,trim(remrecmon) as remrecmon,(select trim(recondesc) from recon where reconpref = 5 and reconcorr = remrecmon)as moneda_descripcion,trim(remrecmoe) as remrecmoe,(select trim(recondesc) from recon where reconpref = 6 and reconcorr = remrecmoe)as moneda_extranjera_descripcion,remreplac,remreplao,remrefvac,remrefvpo,trim(remreucon) as remreucon,trim(remrepcon) as remrepcon,remrefsol,trim(remrecitr) as remrecitr,trim(remreglor) as remreglor,trim(remrecsol) as remrecsol,remrestat,(select trim(recondesc) from recon where reconpref = 11 and reconcorr = remrestat)as estado_descripcion,trim(remrerasi) as remrerasi,trim(remretdid) as remretdid,trim(remrendid) as remrendid,trim(remrecndi) as remrecndi,trim(remrepdid) as remrepdid,trim(remrenomb) as remrenomb,trim(remreapel) as remreapel,trim(remredir1) as remredir1,trim(remredir2) as remredir2,trim(remretfij) as remretfij,trim(remretcel) as remretcel,trim(remremail) as remremail,remreplaz,remreagen,remremrcb,trim(remreuser) as remreuser,remrefpro,trim(remrehora) as remrehora,trim(remreasfi) as remreasfi
+               ,trim(idrectage)as idrectage,idrecntes, trim(idrecrleg)as idrecrleg, idrecfech, trim(idrecrpta)as idrecrpta, trim(idrectcre)as idrectcre, trim(idrecores)as idrecores, idrechora, idrecfpro
+        from remre left join idrec on remrenrec = idrecnrec
+        where remrendid like #{param1}
+        order by remrenrec desc;
+    </select>
+
+</mapper>

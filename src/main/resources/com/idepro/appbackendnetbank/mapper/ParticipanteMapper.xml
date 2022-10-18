@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.ParticipanteRepository">
+
+    <resultMap type="Cliente" id="result">
+        <result property="idCliente" column="gbagecage"/>
+        <result property="nombre" column="gbdacnomb"/>
+        <result property="apellidoPaterno" column="gbdacape1"/>
+        <result property="apellidoMaterno" column="gbdacape2"/>
+        <result property="apellidoCasada" column="gbdacape3"/>
+        <result property="direccionDomicilio" column="gbagedir"/>
+        <result property="direccionNegocio" column="gbageddo"/>
+        <result property="idEstadoCivil" column="gbageeciv"/>
+        <result property="estadoCivil" column="estado_civil"/>
+        <result property="idSexo" column="gbagesexo"/>
+        <result property="sexo" column="sexo"/>
+        <result property="numeroDocumento" column="gbagendid"/>
+        <result property="idTipoDocumento" column="gbagetdid"/>
+        <result property="tipoDocumento" column="documento"/>
+        <result property="complementoDocumento" column="gbagecomp"/>
+        <result property="pais" column="gbagenaci"/>
+        <result property="fechaNacimiento" column="gbagefnac"/>
+        <result property="idCaedec" column="gbageciiu"/>
+        <result property="caedec" column="ciiu"/>
+        <result property="actividad" column="gbageact"/>
+        <result property="fechaRegistro" column="gbagefreg"/>
+        <result property="celular" column="gbdaccelu"/>
+        <result property="telefono1" column="gbagetlfd"/>
+        <result property="telefono2" column="gbagetlfo"/>
+    </resultMap>
+
+    <select id="listTitularByIdPrestamo" resultType="Cliente" resultMap="result">
+         select gbagecage, TRIM(gbdacnomb) gbdacnomb, trim(gbdacape1) gbdacape1, trim(gbdacape2) gbdacape2, trim(gbdacape3) gbdacape3,trim(CONCAT(trim(gbagedir1),gbagedir2)) gbagedir,trim(gbageddo1) ||' '|| trim(gbageddo2) gbageddo,gbageeciv, trim((select gbcondesc from gbcon where gbconpfij = 3 and gbconcorr = gbageeciv)) estado_civil,gbagesexo,trim((select gbcondesc from gbcon where gbconpfij = 2 and gbconcorr = gbagesexo)) sexo, trim(gbagendid) gbagendid ,gbagetdid, trim((select gbcondesc from gbcon where gbconpfij = 4 and gbconcorr = gbagetdid)) documento, trim(gbagecomp) gbagecomp,trim(gbagenaci) gbagenaci,gbagefnac,gbageciiu,(select trim(gbcaedesc) gbcaedesc from gbcae where gbcaeciiu = gbageciiu) ciiu, trim(gbageact1)||' '|| trim(gbageact2)  gbageact, gbagefreg ,trim(gbdaccelu) gbdaccelu,trim(gbagetlfd) gbagetlfd,trim(gbagetlfo)gbagetlfo  from gbage inner join gbdac on gbagecage = gbdaccage inner join prmpr on prmprcage = gbagecage where prmprnpre = #{idPrestamo}
+    </select>
+    <select id="listTitularByNumeroDocumento" resultType="Cliente" resultMap="result">
+         select gbagecage, TRIM(gbdacnomb) gbdacnomb, trim(gbdacape1) gbdacape1, trim(gbdacape2) gbdacape2, trim(gbdacape3) gbdacape3,trim(CONCAT(trim(gbagedir1),gbagedir2)) gbagedir,trim(gbageddo1) ||' '|| trim(gbageddo2) gbageddo,gbageeciv, trim((select gbcondesc from gbcon where gbconpfij = 3 and gbconcorr = gbageeciv)) estado_civil,gbagesexo,trim((select gbcondesc from gbcon where gbconpfij = 2 and gbconcorr = gbagesexo)) sexo, trim(gbagendid) gbagendid ,gbagetdid, trim((select gbcondesc from gbcon where gbconpfij = 4 and gbconcorr = gbagetdid)) documento, trim(gbagecomp) gbagecomp,trim(gbagenaci) gbagenaci,gbagefnac,gbageciiu,(select trim(gbcaedesc) gbcaedesc from gbcae where gbcaeciiu = gbageciiu) ciiu, trim(gbageact1)||' '|| trim(gbageact2)  gbageact, gbagefreg ,trim(gbdaccelu) gbdaccelu,trim(gbagetlfd) gbagetlfd,trim(gbagetlfo)gbagetlfo  from gbage inner join gbdac on gbagecage = gbdaccage where gbagendid like '%' || #{numeroDocumento} || '%'
+    </select>
+
+    <resultMap type="Codeudor" id="result_codeudores">
+        <result property="idCliente" column="prdeucage"/>
+
+    </resultMap>
+    <select id="listCodeudorByIdPrestamo" resultType="Codeudor" resultMap="result_codeudores">
+        select prdeucage from prdeu where prdeunpre = #{param1}  and prdeucage not in(#{param2}) and prdeutres = 1
+    </select>
+
+    <resultMap type="Cliente" id="result_codeudores_cliente">
+        <result property="idCliente" column="gbagecage"/>
+        <result property="nombre" column="gbdacnomb"/>
+        <result property="apellidoPaterno" column="gbdacape1"/>
+        <result property="apellidoMaterno" column="gbdacape2"/>
+        <result property="apellidoCasada" column="gbdacape3"/>
+        <result property="direccionDomicilio" column="gbagedir"/>
+        <result property="direccionNegocio" column="gbageddo"/>
+        <result property="idEstadoCivil" column="gbageeciv"/>
+        <result property="estadoCivil" column="estado_civil"/>
+        <result property="idSexo" column="gbagesexo"/>
+        <result property="sexo" column="sexo"/>
+        <result property="numeroDocumento" column="gbagendid"/>
+        <result property="idTipoDocumento" column="gbagetdid"/>
+        <result property="tipoDocumento" column="documento"/>
+        <result property="complementoDocumento" column="gbagecomp"/>
+        <result property="pais" column="gbagenaci"/>
+        <result property="fechaNacimiento" column="gbagefnac"/>
+        <result property="idCaedec" column="gbageciiu"/>
+        <result property="caedec" column="ciiu"/>
+        <result property="actividad" column="gbageact"/>
+        <result property="fechaRegistro" column="gbagefreg"/>
+        <result property="celular" column="gbdaccelu"/>
+        <result property="telefono1" column="gbagetlfd"/>
+        <result property="telefono2" column="gbagetlfo"/>
+    </resultMap>
+    <select id="listCodeudorByIdCliente" resultType="Cliente" resultMap="result_codeudores_cliente">
+        select gbagecage, trim(gbdacnomb) gbdacnomb, trim(gbdacape1) gbdacape1, trim(gbdacape2) gbdacape2, trim(gbdacape3) gbdacape3,trim(gbagedir1) ||' '|| trim(gbagedir2) gbagedir,trim(gbageddo1) ||' '|| trim(gbageddo2) gbageddo,gbageeciv, trim((select gbcondesc from gbcon where gbconpfij = 3 and gbconcorr = gbageeciv)) estado_civil,gbagesexo,trim((select gbcondesc from gbcon where gbconpfij = 2 and gbconcorr = gbagesexo)) sexo, trim(gbagendid) gbagendid,gbagetdid, trim((select gbcondesc from gbcon where gbconpfij = 4 and gbconcorr = gbagetdid)) documento, trim(gbagecomp) gbagecomp,trim(gbagenaci),gbagefnac,gbageciiu,(select trim(gbcaedesc) gbcaedesc from gbcae where gbcaeciiu = gbageciiu) ciiu, trim(gbageact1)||' '|| trim(gbageact2)  gbageact, gbagefreg ,2,trim(gbagetlfd) gbagetlfd,trim(gbagetlfo) gbagetlfo from gbage inner join gbdac on gbagecage = gbdaccage  where gbagecage = #{idCliente}
+    </select>
+
+</mapper>

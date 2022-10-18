@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.InteresDiferidoRepository">
+
+    <resultMap type="InteresDiferido" id="result">
+        <result property="nroPrestamo" column="nro_prestamo"/>
+        <result property="nombreCliente" column="nombre_cliente"/>
+        <result property="agencia" column="agencia"/>
+        <result property="fechaSistema" column="fecha_sistema"/>
+        <result property="interesCapital" column="interes_capital"/>
+        <result property="interesCapDiferido" column="interes_cap_diferido"/>
+        <result property="difAcumuladoAnt" column="dif_acumulado_ant"/>
+        <result property="acumuladoTotal" column="acumulado_total"/>
+    </resultMap>
+
+    <select id="listInteresDiferidoByIdPrestamo" resultType="InteresDiferido" resultMap="result" >
+        call sp_calculo_interes_dif(#{idPrestamo})
+    </select>
+
+</mapper>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.SudClienteRepository">
+
+    <resultMap type="SudCliente" id="result">
+        <result property="codigoCliente" column="codigo_cliente"/>
+        <result property="nombre1" column="nombre_1"/>
+        <result property="nombre2" column="nombre_2"/>
+        <result property="apellido1" column="apellido_1"/>
+        <result property="apellido2" column="apellido_2"/>
+        <result property="apellidoCasada" column="apellido_casada"/>
+        <result property="nombreCompleto" column="nombre_completo"/>
+        <result property="numeroDocumentoCompleto" column="numero_documento_completo"/>
+        <result property="numeroDocumento" column="numero_documento"/>
+        <result property="extencionDocumento" column="extencion_documento"/>
+        <result property="complementoDocumento" column="complemento_documento"/>
+        <result property="genero" column="genero"/>
+        <result property="lugarNacimiento" column="lugar_nacimiento"/>
+        <result property="fechaNacimiento" column="fecha_nacimiento"/>
+        <result property="idCaedec" column="id_caedec"/>
+        <result property="caedec" column="caedec"/>
+        <result property="direccion" column="direccion"/>
+        <result property="telefono" column="telefono"/>
+        <result property="celular" column="celular"/>
+        <result property="saldoTotalBs" column="saldo_total_bs"/>
+    </resultMap>
+
+    <select id="findByCodigoCliente" resultType="SudCliente" resultMap="result">
+        select gbagecage as codigo_cliente, trim(gbdacnomb)as nombre_1, trim(gbdacnom2)as nombre_2, trim(gbdacape1)as apellido_1, trim(gbdacape2)as apellido_2,
+        trim(gbdacape3)as apellido_casada, trim(gbagenomb)as nombre_completo, trim(gbagendid) as numero_documento_completo,
+        trim(case
+        when gbagendid like '%LP%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'LP', '')
+        when gbagendid like '%CB%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'CB', '')
+        when gbagendid like '%TJ%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'TJ', '')
+        when gbagendid like '%OR%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'OR', '')
+        when gbagendid like '%PO%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'PO', '')
+        when gbagendid like '%PA%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'PA', '')
+        when gbagendid like '%CH%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'CH', '')
+        when gbagendid like '%SC%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'SC', '')
+        when gbagendid like '%BE%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'BE', '')
+        else gbagendid end) as numero_documento,
+        trim(case
+        when gbagendid like '%LP%' then 'LP'
+        when gbagendid like '%CB%' then 'CB'
+        when gbagendid like '%TJ%' then 'TJ'
+        when gbagendid like '%OR%' then 'OR'
+        when gbagendid like '%PO%' then 'PO'
+        when gbagendid like '%PA%' then 'PA'
+        when gbagendid like '%CH%' then 'CH'
+        when gbagendid like '%SC%' then 'SC'
+        when gbagendid like '%BE%' then 'BE'
+        else 'SIN EXTENCION'
+        end) as extencion_documento, trim(gbagecomp)as complemento_documento,
+        (select trim(gbcondesc) from gbcon where gbconpfij = 2 and gbconcorr = gbagesexo)as genero, trim(gbagenaci) as lugar_nacimiento, gbagefnac as fecha_nacimiento,
+        gbageciiu as id_caedec, (select trim(gbcaedesc) from gbcae where gbcaeciiu = gbageciiu)as caedec,
+        trim(case when gbagedir1 is null then '' else gbagedir1 end||case when gbagedir2 is null then '' else gbagedir2 end)as direccion,
+        case when gbagetlfd like '' or gbagetlfd is null then null else trim(gbagetlfd) end as telefono,
+        case when gbdaccelu like '' or gbdaccelu is null then null else trim(gbdaccelu) end as celular,
+        (select case when sum(prmprsald) is null then 0 else sum(prmprsald) end from prmpr where prmprstat in (2,3,4,5) and prmprcmon = 1 and prmprcage = gbagecage) +
+        ((select case when sum(prmprsald) is null then 0 else sum(prmprsald) end from prmpr where prmprstat in (2,3,4,5) and prmprcmon = 2 and prmprcage = gbagecage) / 6.86) as saldo_total_bs
+        from gbage inner join gbdac on gbagecage = gbdaccage where gbagecage = #{param1};
+    </select>
+
+    <select id="listByNumeroDocumento" resultType="SudCliente" resultMap="result">
+        select gbagecage as codigo_cliente, trim(gbdacnomb)as nombre_1, trim(gbdacnom2)as nombre_2, trim(gbdacape1)as apellido_1, trim(gbdacape2)as apellido_2,
+        trim(gbdacape3)as apellido_casada, trim(gbagenomb)as nombre_completo, trim(gbagendid) as numero_documento_completo,
+        trim(case
+        when gbagendid like '%LP%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'LP', '')
+        when gbagendid like '%CB%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'CB', '')
+        when gbagendid like '%TJ%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'TJ', '')
+        when gbagendid like '%OR%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'OR', '')
+        when gbagendid like '%PO%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'PO', '')
+        when gbagendid like '%PA%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'PA', '')
+        when gbagendid like '%CH%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'CH', '')
+        when gbagendid like '%SC%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'SC', '')
+        when gbagendid like '%BE%' then replace(case when gbagecomp is not null then replace(gbagendid, gbagecomp, '') else gbagendid end, 'BE', '')
+        else gbagendid end) as numero_documento,
+        trim(case
+        when gbagendid like '%LP%' then 'LP'
+        when gbagendid like '%CB%' then 'CB'
+        when gbagendid like '%TJ%' then 'TJ'
+        when gbagendid like '%OR%' then 'OR'
+        when gbagendid like '%PO%' then 'PO'
+        when gbagendid like '%PA%' then 'PA'
+        when gbagendid like '%CH%' then 'CH'
+        when gbagendid like '%SC%' then 'SC'
+        when gbagendid like '%BE%' then 'BE'
+        else 'SIN EXTENCION'
+        end) as extencion_documento, trim(gbagecomp)as complemento_documento,
+        (select trim(gbcondesc) from gbcon where gbconpfij = 2 and gbconcorr = gbagesexo)as genero, trim(gbagenaci) as lugar_nacimiento, gbagefnac as fecha_nacimiento,
+        gbageciiu as id_caedec, (select trim(gbcaedesc) from gbcae where gbcaeciiu = gbageciiu)as caedec,
+        trim(case when gbagedir1 is null then '' else gbagedir1 end||case when gbagedir2 is null then '' else gbagedir2 end)as direccion,
+        case when gbagetlfd like '' or gbagetlfd is null then null else trim(gbagetlfd) end as telefono,
+        case when gbdaccelu like '' or gbdaccelu is null then null else trim(gbdaccelu) end as celular,
+        (select case when sum(prmprsald) is null then 0 else sum(prmprsald) end from prmpr where prmprstat in (2,3,4,5) and prmprcmon = 1 and prmprcage = gbagecage) +
+        ((select case when sum(prmprsald) is null then 0 else sum(prmprsald) end from prmpr where prmprstat in (2,3,4,5) and prmprcmon = 2 and prmprcage = gbagecage) / 6.86) as saldo_total_bs
+        from gbage inner join gbdac on gbagecage = gbdaccage where gbagendid like '%' || #{param1} || '%';
+    </select>
+
+</mapper>

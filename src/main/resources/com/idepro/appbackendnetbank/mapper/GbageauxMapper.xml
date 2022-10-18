@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.GbageauxRepository">
+
+    <resultMap type="GbageAux" id="result">
+        <id property="gbagecage" column="gbagecage" />
+        <result property="gbagenomb" column="gbagenomb" />
+    </resultMap>
+
+    <select id="findAll" resultType="GbageAux" resultMap="result">
+        select * from gbageaux3
+    </select>
+
+    <!--    <select id="findOne" resultType="IsDealer" resultMap="result">-->
+    <!--        select * from IS_DEALER where id_dealer = #{idDealer}-->
+    <!--    </select>-->
+
+    <!--<insert id="insertDealer" parameterType="IsDealer">-->
+    <!--INSERT INTO is_dealer(id_dealer, nombre, direccion, id_zeus, id_siebel, email, saldo, estado)-->
+    <!--&#45;&#45;         VALUES(#{idDealer}, #{nombre}, #{direccion}, #{idZeus}, #{idSiebel}, #{email}, #{saldo}, #{estado});-->
+    <!--VALUES(20, 'Prueba', 'C. México 248', 11, '1-1AXCJ', 'contacto@promoempresa.com', 18500, 'AC');-->
+    <!--</insert>-->
+
+    <!--    <insert id="saveDealer" parameterType="IsDealer">-->
+    <!--        INSERT INTO is_dealer (id_dealer, nombre, direccion, id_zeus, id_siebel, email, saldo, estado)-->
+    <!--        VALUES(#{idDealer}, #{nombre}, #{direccion}, #{idZeus}, #{idSiebel}, #{email}, #{saldo}, #{estado})-->
+    <!--    </insert>-->
+
+    <!--    <update id="updateDealer" parameterType="IsDealer">-->
+    <!--        UPDATE is_dealer SET nombre = #{nombre}, direccion = #{direccion}, email = #{email}, saldo = #{saldo}, estado = #{estado}-->
+    <!--        WHERE id_dealer = #{idDealer}-->
+    <!--    </update>-->
+
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.CdCreditoAsignadoRepository">
+
+    <resultMap type="CdCreditoAsignado" id="result">
+        <result property="idCreditoAsignado" column="idCreditoAsignado"/>
+        <result property="idCredito" column="prmprnpre"/>
+        <result property="idGestor" column="prmprrseg"/>
+    </resultMap>
+
+    <select id="listAll" resultType="CdCreditoAsignado" resultMap="result">
+        select prmprnpre||prmprrseg as idCreditoAsignado, prmprnpre, prmprrseg from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701) order by prmprrseg, prmprnpre desc;
+    </select>
+
+    <select id="findByIdCreditoAsignado" resultType="CdCreditoAsignado" resultMap="result">
+        select prmprnpre||prmprrseg as idCreditoAsignado, prmprnpre, prmprrseg from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701) and prmprnpre||prmprrseg  = #{param1};
+    </select>
+
+</mapper>

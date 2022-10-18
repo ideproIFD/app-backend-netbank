@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.ParametroDiarioRepository">
+
+    <resultMap type="ParametroDiario" id="result">
+        <result property="nombreEmpresa" column="gbpmtnemp"/>
+        <result property="nit" column="gbpmtcruc"/>
+        <result property="direccion1" column="gbpmtdir1"/>
+        <result property="direccion2" column="gbpmtdir2"/>
+        <result property="fechaSistema" column="gbpmtfdia"/>
+        <result property="tipoCambio" column="gbpmtscam"/>
+        <result property="tipoCambioOficial" column="gbpmttcof"/>
+        <result property="tipoCambioCompra" column="gbpmttcco"/>
+        <result property="tipoCambioVenta" column="gbpmttcco"/>
+        <result property="ufv" column="gbpmttufv"/>
+    </resultMap>
+
+    <select id="listParametroDiario" resultType="ParametroDiario" resultMap="result">
+         select trim(gbpmtnemp)as gbpmtnemp, trim(gbpmtcruc)as gbpmtcruc, trim(gbpmtdir1)as gbpmtdir1, trim(gbpmtdir2)as gbpmtdir2, gbpmtfdia, gbpmtscam, gbpmttcof, gbpmttcco, gbpmttcve, gbpmttufv from gbpmt
+    </select>
+
+</mapper>

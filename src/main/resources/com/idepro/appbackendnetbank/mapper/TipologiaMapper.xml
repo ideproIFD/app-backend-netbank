@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.TipologiaRepository">
+
+    <resultMap type="Tipologia" id="result">
+        <result property="idTipologia" column="resutctip"/>
+        <result property="idSubTipologia" column="resutcsti"/>
+        <result property="descripcion" column="resutdesc"/>
+        <result property="plazo" column="resutplzo"/>
+    </resultMap>
+
+    <select id="listAll" resultType="Tipologia" resultMap="result">
+        select resutctip, resutcsti, trim(resutdesc)as resutdesc, resutplzo from resut where resutcsti = 0 order by 1,2;
+    </select>
+    <select id="listByIdTipologia" resultType="Tipologia" resultMap="result">
+        select resutctip, resutcsti, trim(resutdesc)as resutdesc, resutplzo from resut where resutcsti != 0 and resutctip = #{param1} order by 1,2;
+    </select>
+    <select id="findByIdTipologiaByIdSubTipologia" resultType="Tipologia" resultMap="result">
+        select resutctip, resutcsti, trim(resutdesc)as resutdesc, resutplzo from resut where resutctip = #{param1} and resutcsti = #{param2} order by 1,2;
+    </select>
+
+</mapper>

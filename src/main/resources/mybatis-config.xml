@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <typeAliases>
+        <package name="com.idepro.appbackendnetbank.model"/>
+    </typeAliases>
+    <mappers>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/ParticipanteMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/PrestamoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/ParametroDiarioMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/UsuarioMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/UsuarioNbMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/RolRecursoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/ClasificadorMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/TipologiaMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/DocumentoOrigenMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/LocalidadReclamoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/ReclamanteMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/ReclamoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/ReclamoAdicionalMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/ReporteReclamoDiferidoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/ResetMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/TransaccionMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/PlanPagoMapper.xml"/>
+
+        <mapper resource="com/idepro/appbackendnetbank/mapper/CdAgenciaMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/CdZonaMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/CdGestorMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/CdCreditoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/CdLineaCreditoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/CdCreditoAsignadoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/CdHistorialPagoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/CdClienteMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/CdFiadorMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/CdFiadorAsignadoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/CdGarantiaMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/CdGarantiaAsignadoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/SoliPagoMapper.xml"/>
+
+        <mapper resource="com/idepro/appbackendnetbank/mapper/SudPlanPagoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/SudCuotaPagadaMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/SudPrestamoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/SudClienteMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/SudCargoPrestamoMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/BcpClienteMapper.xml"/>
+
+        <mapper resource="com/idepro/appbackendnetbank/mapper/LogMapper.xml"/>
+    </mappers>
+</configuration>

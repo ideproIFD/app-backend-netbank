@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.CdCreditoRepository">
+
+    <resultMap type="CdCredito" id="result">
+        <result property="idCredito" column="prmprnpre"/>
+        <result property="idCliente" column="prmprcage"/>
+        <result property="pagoParaEstarAlDia" column="pagoParaEstarAlDia"/>
+        <result property="valorCuota" column="valorCuota"/>
+        <result property="diasCapitalMora" column="diasCapitalMora"/>
+        <result property="fechaOtorgado" column="prmprfreg"/>
+        <result property="fechaDesembolso" column="prmprfdes"/>
+        <result property="fechaVencimiento" column="fechaVencimiento"/>
+        <result property="saldoNormal" column="saldoNormal"/>
+        <result property="saldoDiferido" column="saldoDiferido"/>
+        <result property="saldoTotal" column="saldoTotal"/>
+        <result property="montoOtorgado" column="prmprmdes"/>
+        <result property="capitalMora" column="capitalMora"/>
+        <result property="ultimaFechaPago" column="prmprfulp"/>
+        <result property="plazo" column="prmprplzo"/>
+        <result property="frecuencia" column="prmprppgk"/>
+        <result property="cantidadCoutas" column="cantidadCoutas"/>
+        <result property="idLineaCredito" column="prmprtcre"/>
+        <result property="tasaInteres" column="tasaInteres"/>
+        <result property="idAgencia" column="prmpragen"/>
+        <result property="notaCliente" column="notaCliente"/>
+        <result property="idEstado" column="prmprstat"/>
+        <result property="estado" column="estado"/>
+    </resultMap>
+
+    <select id="listAll" resultType="CdCredito" resultMap="result">
+        select prmprnpre, prmprcage, (select max(idpctacuot) * (case when prmprcmon = 1 then 1 when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 0 end) from idpcta where idpctafpro = today and idpctanpre = prmprnpre) as pagoParaEstarAlDia,
+        (select prppgtota from prppg where prppgnpre = prmprnpre and prppgfech in (select min(prppgfech) from prppg where prppgfech >= (select gbpmtfdia from gbpmt) and prppgnpre = prmprnpre)) as valorCuota,
+        case when prmprfinc is null then 0 else (select gbpmtfdia from gbpmt) - prmprfinc end as diasCapitalMora,
+        prmprfreg, prmprfdes,
+        (select min(prppgfech) from prppg where prppgfech >= today and prppgnpre = prmprnpre) as fechaVencimiento,
+        round((case
+        when prmprcmon = 1 then prmprsald
+        when prmprcmon = 2 then prmprsald * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2) as saldoNormal,
+        round((case
+        when prmprcmon = 1 then (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end)
+        when prmprcmon = 2 then (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end) * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2) as saldoDiferido,
+        round((case
+        when prmprcmon = 1 then (prmprsald + (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end))
+        when prmprcmon = 2 then (prmprsald + (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end)) * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2) as saldoTotal,
+        round((case
+        when prmprcmon = 1 then prmprmdes
+        when prmprcmon = 2 then prmprmdes * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2) as prmprmdes,
+        (select case when sum(prppgcapi) is null then 0 else sum(prppgcapi) * (case when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 1 end) end from prppg where prppgnpre = prmprnpre and prppgfech &lt;= (select gbpmtfdia from gbpmt)) - (select case when sum(prtdtimpp) is null then 0 else abs(sum(prtdtimpp) * (case when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 1 end)) end from prtdt where prtdtnpre = prmprnpre and prtdtttrn = 2 and prtdtccon = 1 and prtdtmrcb = 0) as capitalMora,
+        prmprfulp, round((prmprplzo / 30),2)as prmprplzo, round((prmprppgk / 30),2)as prmprppgk, (select count(*) from prppg where prppgnpre = prmprnpre) as cantidadCuotas, prmprtcre,
+        (select max(prtsatbas) from prtsa where prtsanpre = prmprnpre and prtsafpro = (select max(prtsafpro) from prtsa where prtsanpre = prmprnpre)) as tasaInteres,
+        prmpragen, '' as notaCliente, prmprstat, case when prmprstat in (2,3,4) and prmprfinc is null then 'VIGENTE AL DIA' when prmprstat in (2,3,4) and prmprfinc is not null then 'VIGENTE' when prmprstat = 5 then 'VENCIDO' when prmprstat = 6 then 'EJECUCION' when prmprstat = 7 then 'CASTIGADO' else prmprstat||'' end as estado
+        from prmpr where prmprstat in (2,3,4,5,6) and prmprtcre not in (601,701) order by prmprnpre;
+    </select>
+
+    <select id="findByIdCredito" resultType="CdCredito" resultMap="result">
+        select prmprnpre, prmprcage, (select max(idpctacuot) * (case when prmprcmon = 1 then 1 when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 0 end) from idpcta where idpctafpro = today and idpctanpre = prmprnpre) as pagoParaEstarAlDia,
+        (select prppgtota from prppg where prppgnpre = prmprnpre and prppgfech in (select min(prppgfech) from prppg where prppgfech >= (select gbpmtfdia from gbpmt) and prppgnpre = prmprnpre)) as valorCuota,
+        case when prmprfinc is null then 0 else (select gbpmtfdia from gbpmt) - prmprfinc end as diasCapitalMora,
+        prmprfreg, prmprfdes,
+        (select min(prppgfech) from prppg where prppgfech >= today and prppgnpre = prmprnpre) as fechaVencimiento,
+        round((case
+        when prmprcmon = 1 then prmprsald
+        when prmprcmon = 2 then prmprsald * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2) as saldoNormal,
+        round((case
+        when prmprcmon = 1 then (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end)
+        when prmprcmon = 2 then (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end) * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2) as saldoDiferido,
+        round((case
+        when prmprcmon = 1 then (prmprsald + (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end))
+        when prmprcmon = 2 then (prmprsald + (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end)) * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2) as saldoTotal,
+        round((case
+        when prmprcmon = 1 then prmprmdes
+        when prmprcmon = 2 then prmprmdes * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2) as prmprmdes,
+        (select case when sum(prppgcapi) is null then 0 else sum(prppgcapi) * (case when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 1 end) end from prppg where prppgnpre = prmprnpre and prppgfech &lt;= (select gbpmtfdia from gbpmt)) - (select case when sum(prtdtimpp) is null then 0 else abs(sum(prtdtimpp) * (case when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 1 end)) end from prtdt where prtdtnpre = prmprnpre and prtdtttrn = 2 and prtdtccon = 1 and prtdtmrcb = 0) as capitalMora,
+        prmprfulp, round((prmprplzo / 30),2)as prmprplzo, round((prmprppgk / 30),2)as prmprppgk, (select count(*) from prppg where prppgnpre = prmprnpre) as cantidadCuotas, prmprtcre,
+        (select max(prtsatbas) from prtsa where prtsanpre = prmprnpre and prtsafpro = (select max(prtsafpro) from prtsa where prtsanpre = prmprnpre)) as tasaInteres,
+        prmpragen, '' as notaCliente, prmprstat, case when prmprstat in (2,3,4) and prmprfinc is null then 'VIGENTE AL DIA' when prmprstat in (2,3,4) and prmprfinc is not null then 'VIGENTE' when prmprstat = 5 then 'VENCIDO' when prmprstat = 6 then 'EJECUCION' when prmprstat = 7 then 'CASTIGADO' else prmprstat||'' end as estado
+        from prmpr where prmprstat in (2,3,4,5,6) and prmprtcre not in (601,701)
+        and prmprnpre = #{param1};
+    </select>
+
+</mapper>

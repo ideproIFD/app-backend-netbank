@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.UsuarioRepository">
+
+    <resultMap type="Usuario" id="result">
+        <id property="usuario" column="idusrusrn"/>
+        <result property="password" column="idusrclav"/>
+        <result property="nombre" column="idusrnomb"/>
+        <result property="descripcion" column="idusrdesc"/>
+        <result property="email" column="idusrmail"/>
+        <result property="estado" column="idusrstat"/>
+        <result property="addUser" column="idusruser"/>
+        <result property="hora" column="idusrhora"/>
+        <result property="addDate" column="idusrfpro"/>
+        <result property="idRol" column="idusrnrol"/>
+    </resultMap>
+
+    <insert id="saveUsuario" parameterType="Usuario">
+        INSERT INTO idusr (idusrusrn, idusrclav, idusrnomb, idusrdesc, idusrmail, idusrstat, idusruser, idusrhora, idusrfpro, idusrnrol)
+        VALUES(#{param1}, #{param2}, #{param3}, #{param4}, #{param5}, #{param6}, #{param7}, current::datetime hour to SECOND, TODAY, #{param8})
+    </insert>
+
+    <update id="updateUsuario" parameterType="Usuario">
+        UPDATE idusr SET idusrclav = #{param2}, idusrnomb = #{param3}, idusrdesc = #{param4}, idusrmail = #{param5}, idusrstat = #{param6}, idusruser = #{param7}, idusrnrol = #{param8}, idusrhora = current::datetime hour to SECOND, idusrfpro = TODAY
+        WHERE idusrusrn = #{param1}
+    </update>
+
+    <select id="findByUsuario" resultType="Usuario" resultMap="result">
+        select idusrusrn, trim(idusrclav) as idusrclav, trim(idusrnomb)as idusrnomb, trim(idusrdesc)as idusrdesc, trim(idusrmail)as idusrmail, idusrstat, idusruser, idusrhora, idusrfpro, idusrnrol from idusr where idusrusrn = #{usuario}
+    </select>
+
+    <select id="findByEmail" resultType="Usuario" resultMap="result">
+        select idusrusrn, trim(idusrclav) as idusrclav, trim(idusrnomb)as idusrnomb, trim(idusrdesc)as idusrdesc, trim(idusrmail)as idusrmail, idusrstat, idusruser, idusrhora, idusrfpro, idusrnrol from idusr where trim(idusrmail) = trim(#{email})
+    </select>
+
+    <select id="listByEstado" resultType="Usuario" resultMap="result">
+        select idusrusrn, trim(idusrclav) as idusrclav, trim(idusrnomb)as idusrnomb, trim(idusrdesc)as idusrdesc, trim(idusrmail)as idusrmail, idusrstat, idusruser, idusrhora, idusrfpro, idusrnrol from idusr where idusrstat = #{estado}
+    </select>
+
+    <select id="listAll" resultType="Usuario" resultMap="result">
+        select idusrusrn, trim(idusrclav) as idusrclav, trim(idusrnomb)as idusrnomb, trim(idusrdesc)as idusrdesc, trim(idusrmail)as idusrmail, idusrstat, idusruser, idusrhora, idusrfpro, idusrnrol from idusr
+    </select>
+
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.ReclamanteRepository">
+
+    <resultMap type="Reclamante" id="result">
+        <result property="tipoDocumento" column="reagetdid"/>
+        <result property="numeroDocumento" column="reagendid"/>
+        <result property="correlativoDocumento" column="reagecndi"/>
+        <result property="extencionDocumento" column="reagepdid"/>
+        <result property="nombre" column="reagenomb"/>
+        <result property="apellidos" column="reageapel"/>
+        <result property="direccion1" column="reagedir1"/>
+        <result property="direccion2" column="reagedir2"/>
+        <result property="telefonoFijo" column="reagetfij"/>
+        <result property="telefonoCelular" column="reagetcel"/>
+        <result property="email" column="reagemail"/>
+        <result property="marcaBaja" column="reagemrcb"/>
+        <result property="usuario" column="reageuser"/>
+        <result property="fechaProceso" column="reagefpro"/>
+        <result property="hora" column="reagehora"/>
+    </resultMap>
+
+    <select id="listAll" resultType="Reclamante" resultMap="result">
+        select trim(reagetdid)as reagetdid, trim(reagendid)as reagendid, reagecndi , trim(reagepdid)as reagepdid, trim(reagenomb)as reagenomb, trim(reageapel)as reageapel, trim(reagedir1)as reagedir1, trim(reagedir2)as reagedir2, trim(reagetfij)as reagetfij, trim(reagetcel)as reagetcel, trim(reagemail)as reagemail, reagemrcb, trim(reageuser)as reageuser, reagefpro, trim(reagehora)as reagehora from reage;
+    </select>
+    <select id="listByNumeroDocumento" resultType="Reclamante" resultMap="result">
+        select trim(reagetdid)as reagetdid, trim(reagendid)as reagendid, reagecndi , trim(reagepdid)as reagepdid, trim(reagenomb)as reagenomb, trim(reageapel)as reageapel, trim(reagedir1)as reagedir1, trim(reagedir2)as reagedir2, trim(reagetfij)as reagetfij, trim(reagetcel)as reagetcel, trim(reagemail)as reagemail, reagemrcb, trim(reageuser)as reageuser, reagefpro, trim(reagehora)as reagehora from reage where reagendid = #{param1} order by reagecndi;
+    </select>
+    <select id="listByNumeroDocumentoByTipoDocumento" resultType="Reclamante" resultMap="result">
+        select trim(reagetdid)as reagetdid, trim(reagendid)as reagendid, reagecndi , trim(reagepdid)as reagepdid, trim(reagenomb)as reagenomb, trim(reageapel)as reageapel, trim(reagedir1)as reagedir1, trim(reagedir2)as reagedir2, trim(reagetfij)as reagetfij, trim(reagetcel)as reagetcel, trim(reagemail)as reagemail, reagemrcb, trim(reageuser)as reageuser, reagefpro, trim(reagehora)as reagehora from reage where reagendid = #{param1} and reagetdid = #{param2} order by reagecndi;
+    </select>
+    <insert id="saveReclamante" parameterType="Reclamante">
+        insert into reage (reagetdid, reagendid, reagecndi, reagepdid, reagenomb, reageapel, reagedir1, reagedir2, reagetfij, reagetcel, reagemail, reagemrcb, reageuser, reagefpro, reagehora)
+        values (#{param1}, #{param2}, (select count(*)+1 from reage where reagetdid like #{param1} and reagendid like #{param2}), #{param3}, #{param4}, #{param5}, #{param6}, #{param7}, #{param8}, #{param9}, #{param10}, 0, #{param11}, TODAY, current::datetime hour to SECOND);
+    </insert>
+
+</mapper>

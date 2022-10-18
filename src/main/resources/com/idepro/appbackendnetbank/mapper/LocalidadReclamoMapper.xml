@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.LocalidadReclamoRepository">
+
+    <resultMap type="LocalidadReclamo" id="result">
+        <result property="idLocalidad" column="id_localidad"/>
+        <result property="localidad" column="localidad"/>
+        <result property="idResponsable" column="id_responsable"/>
+        <result property="responsable" column="responsable"/>
+        <result property="idTipoOficina" column="id_tipo_oficina"/>
+        <result property="tipoOficina" column="tipo_oficina"/>
+    </resultMap>
+
+    <select id="listAll" resultType="LocalidadReclamo" resultMap="result">
+        select
+        reconcorr as id_localidad,
+        trim(recondesc) as localidad,
+        trim((select min(rerescres) from reres where reresstat = 0 and rereslofi = r.reconcorr)) as id_responsable,
+        trim((select upper(adusrnomb) from adusr where adusrusrn like (select min(rerescres) from reres where reresstat = 0 and rereslofi = reconcorr))) as responsable,
+        (select min(rerestofi) from reres where reresstat = 0 and rereslofi = reconcorr)as id_tipo_oficina,
+        trim((select recondesc from recon where reconpref = 1 and reconcorr = (select min(rerestofi) from reres where rereslofi = r.reconcorr)))as tipo_oficina
+        from recon r where reconpref = 2 and reconcorr != 0;
+    </select>
+
+</mapper>

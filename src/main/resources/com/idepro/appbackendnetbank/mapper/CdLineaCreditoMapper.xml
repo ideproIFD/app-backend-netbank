@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.CdLineaCreditoRepository">
+
+    <resultMap type="CdLineaCredito" id="result">
+        <result property="idLineaCredito" column="prtcrtcre"/>
+        <result property="lineaCredito" column="prtcrdesc"/>
+    </resultMap>
+
+    <select id="listAll" resultType="CdLineaCredito" resultMap="result">
+        select prtcrtcre, trim(prtcrdesc) as prtcrdesc from prtcr order by 1;
+    </select>
+
+    <select id="findByIdLineaCredito" resultType="CdLineaCredito" resultMap="result">
+        select prtcrtcre, trim(prtcrdesc) as prtcrdesc from prtcr where prtcrtcre = #{param1};
+    </select>
+
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.CdFiadorAsignadoRepository">
+
+    <resultMap type="CdFiadorAsignado" id="result">
+        <result property="idFiador" column="prdeucage"/>
+        <result property="idCredito" column="prdeunpre"/>
+        <result property="tipoFiador" column="tipo"/>
+    </resultMap>
+
+    <select id="listAll" resultType="CdFiadorAsignado" resultMap="result">
+        select prdeucage, prdeunpre,
+        case when prdeutres = 2 then 'GARANTE' when prdeutres = 1 then 'CODEUDOR' end as tipo
+        from prdeu where prdeunpre in (select prmprnpre from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701))
+        and prdeucage not in (select prmprcage from prmpr where prmprnpre in (select prmprnpre from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701)));
+    </select>
+
+</mapper>

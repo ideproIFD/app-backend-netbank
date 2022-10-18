@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.SudPrestamoRepository">
+
+    <resultMap type="SudPrestamo" id="result">
+        <result property="numeroPrestamo" column="numero_prestamo"/>
+        <result property="codigoCliente" column="codigo_cliente"/>
+        <result property="producto" column="producto"/>
+        <result property="idCaedecDestino" column="id_caedec_destino"/>
+        <result property="caedecDestino" column="caedec_destino"/>
+        <result property="destino" column="destino"/>
+        <result property="destinoParticular" column="destino_particular"/>
+        <result property="moneda" column="moneda"/>
+        <result property="montoDesembolso" column="monto_desembolso"/>
+        <result property="montoDesembolsoBs" column="monto_desembolso_bs"/>
+        <result property="fechaDesembolso" column="fecha_desembolso"/>
+        <result property="fechaUltimoPago" column="fecha_ultimo_pago"/>
+        <result property="formaPago" column="forma_pago"/>
+        <result property="plazoDias" column="plazo_dias"/>
+        <result property="periodicidadPagoCapitalDias" column="periodicidad_pago_capital_dias"/>
+        <result property="periodicidadPagoInteresDias" column="periodicidad_pago_interes_dias"/>
+        <result property="diaPago" column="dia_pago"/>
+        <result property="saldo" column="saldo"/>
+        <result property="saldoBs" column="saldo_bs"/>
+        <result property="estado" column="estado"/>
+
+    </resultMap>
+
+    <select id="listPrestamoByCodigoCliente" resultType="SudPrestamo" resultMap="result">
+        select prmprnpre as numero_prestamo, prmprcage as codigo_cliente,
+        (select trim(prtcrdesc) from prtcr where prtcrtcre = prmprtcre)as producto,
+        prmprciiu as id_caedec_destino, (select trim(gbcaedesc) from gbcae where gbcaeciiu = prmprciiu)as caedec_destino,
+        (select trim(prcondesc) from prcon where prconpref = 50 and prconcorr = prmprdest)as destino,
+        trim(prmprddes) as destino_particular, (select trim(gbcondesc) from gbcon where gbconpfij = 10 and gbconcorr = prmprcmon)as moneda,
+        prmprmdes as monto_desembolso, (prmprmdes * case when prmprcmon = 2 then 6.86 else 1 end)as monto_desembolso_bs, prmprfdes as fecha_desembolso, prmprfulp as fecha_ultimo_pago,
+        (select trim(prcondesc) from prcon where prconpref = 2 and prconcorr = prmprfpag)as forma_pago, prmprplzo as plazo_dias, prmprppgk as periodicidad_pago_capital_dias,
+        prmprppgi as periodicidad_pago_interes_dias, prmprdiap as dia_pago, prmprsald as saldo, (prmprsald * case when prmprcmon = 2 then 6.86 else 1 end) as saldo_bs,
+        case
+        when prmprstat in (0,1) then 'NO DESEMBOLSADO'
+        when prmprstat in (2,3,4) then 'VIGENTE'
+        when prmprstat = 5 then 'VENCIDO'
+        when prmprstat = 6 then 'EJECUCION'
+        when prmprstat in (7,8) then 'CASTIGADO'
+        when prmprstat = 9 then 'CANCELADO'
+        else prmprstat||'' end as estado
+        from prmpr where prmprcage = #{param1}
+    </select>
+
+</mapper>

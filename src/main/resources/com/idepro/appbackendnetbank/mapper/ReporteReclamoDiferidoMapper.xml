@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.ReporteReclamoDiferidoRepository">
+
+    <resultMap type="ReporteReclamoDiferido" id="result">
+        <result property="fechaCorte" column="fecha_corte"/>
+        <result property="codigoEnvio" column="codigo_envio"/>
+        <result property="numeroReclamo" column="numero_reclamo"/>
+        <result property="gestion" column="gestion"/>
+        <result property="fechaReclamo" column="fecha_reclamo"/>
+        <result property="tipoDocumento" column="tipo_documento"/>
+        <result property="numeroDocumento" column="numero_documento"/>
+        <result property="nombre" column="nombre"/>
+        <result property="apellidos" column="apellidos"/>
+        <result property="tipoOficina" column="tipo_oficina"/>
+        <result property="localidadOficina" column="localidad_oficina"/>
+        <result property="ubicacion" column="ubicacion"/>
+        <result property="idTipologia" column="id_tipologia"/>
+        <result property="idSubTipologia" column="id_sub_tipologia"/>
+        <result property="glosa" column="glosa"/>
+        <result property="importe" column="importe"/>
+        <result property="moneda" column="moneda"/>
+        <result property="monedaExtranjera" column="moneda_extranjera"/>
+        <result property="usuarioContacto" column="usuario_contacto"/>
+        <result property="gestionAsfi" column="gestion_asfi"/>
+        <result property="codigoAsfi" column="codigo_asfi"/>
+        <result property="fechaSolucion" column="fecha_solucion"/>
+        <result property="descripcionRespuesta" column="descripcion_respuesta"/>
+        <result property="resultadoReclamo" column="resultado_reclamo"/>
+        <result property="telefono" column="telefono"/>
+        <result property="tipoCredito" column="tipo_credito"/>
+        <result property="email" column="email"/>
+        <result property="responsable" column="responsable"/>
+    </resultMap>
+
+    <select id="listAll" resultType="ReporteReclamoDiferido" resultMap="result">
+        select to_char(today, '%Y-%m-%d')as fecha_corte, 'IIIID'as codigo_envio, remrenrec as numero_reclamo, year(remrefrec)as gestion, to_char(remrefrec, '%Y-%m-%d')as fecha_reclamo,
+               (case when length(remretdid) = 1 then '0'||remretdid else remretdid||'' end)as tipo_documento, trim(remrendid)as numero_documento, trim(remrenomb)as nombre, trim(remreapel)as apellidos, (select trim(reconabre) from recon where reconpref = 1 and reconcorr = remretofi)as tipo_oficina, (select trim(reconabre) from recon where reconpref = 2 and reconcorr = remrelofi)as localidad_oficina,
+               (select trim(idpcondesc) from idpcon where idpconpref = 7 and idpconcorr = remrelofi)as ubicacion, remrectip as id_tipologia, remrecsti as id_sub_tipologia, trim(remreglo1)as glosa, remremcom as importe, trim(remrecmon) as moneda, trim(remrecmoe) as moneda_extranjera, trim(remrepcon)as usuario_contacto,
+               year(remrefsol)as gestion_asfi, trim(remreasfi)as codigo_asfi, to_char(remrefsol, '%Y-%m-%d')as fechaSolucion, trim(remreglor)as descripcion_respuesta, (remrestat||'')as resultado_reclamo, ((case when remretfij is null or remretfij like '' then '' else trim(remretfij)||';' end)||(case when remretcel is null or remretcel like '' then '' else trim(remretcel)||';' end))as telefono, trim(idrectcre) as tipo_credito, trim(remremail)as email, trim(remrepcon)as responsable
+        from remre left join idrec on remrenrec = idrecnrec
+        where remrectip = 42 order by remrenrec asc;
+    </select>
+
+    <select id="listBetweenDate" resultType="ReporteReclamoDiferido" resultMap="result">
+        select to_char((to_date('01-10-2021','%d-%m-%Y')), '%Y-%m-%d')as fecha_corte, 'IIIID'as codigo_envio, remrenrec as numero_reclamo, year(remrefrec)as gestion, to_char(remrefrec, '%Y-%m-%d')as fecha_reclamo,
+               (case when length(remretdid) = 1 then '0'||remretdid else remretdid||'' end)as tipo_documento, trim(remrendid)as numero_documento, trim(remrenomb)as nombre, trim(remreapel)as apellidos, (select trim(reconabre) from recon where reconpref = 1 and reconcorr = remretofi)as tipo_oficina, (select trim(reconabre) from recon where reconpref = 2 and reconcorr = remrelofi)as localidad_oficina,
+               (select trim(idpconpdesc) from idpcon where idpconpref = 7 and idpconcorr = remrelofi)as ubicacion, remrectip as id_tipologia, remrecsti as id_sub_tipologia, trim(remreglo1)as glosa, remremcom as importe, trim(remrecmon) as moneda, trim(remrecmoe) as moneda_extranjera, trim(remrepcon)as usuario_contacto,
+               year(remrefsol)as gestion_asfi, trim(remreasfi)as codigo_asfi, to_char(remrefsol, '%Y-%m-%d')as fechaSolucion, trim(remreglor)as descripcion_respuesta, (remrestat||'')as resultado_reclamo, ((case when remretfij is null or remretfij like '' then '' else trim(remretfij)||';' end)||(case when remretcel is null or remretcel like '' then '' else trim(remretcel)||';' end))as telefono, trim(idrectcre) as tipo_credito, trim(remremail)as email, trim(remrepcon)as responsable
+        from remre left join idrec on remrenrec = idrecnrec
+        where remrectip = 42 and remrefrec between to_date(#{param1},'%d-%m-%Y') and to_date(#{param2},'%d-%m-%Y')
+        order by remrenrec asc;
+    </select>
+
+</mapper>

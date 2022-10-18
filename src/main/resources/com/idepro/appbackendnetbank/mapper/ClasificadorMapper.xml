@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.ClasificadorRepository">
+
+    <resultMap type="Clasificador" id="result">
+        <result property="prefijo" column="prefijo"/>
+        <result property="correlativo" column="correlativo"/>
+        <result property="descripcion" column="descripcion"/>
+        <result property="abreviacion" column="abreviacion"/>
+        <result property="tabla" column="tabla"/>
+    </resultMap>
+
+    <insert id="saveClasificador" parameterType="Clasificador">
+        INSERT INTO idpcon (idpconpref, idpconcorr, idpcondesc, idpconabre, idpconuser, idpconhora, idpconfpro)
+        VALUES(#{param1}, (select max(idpconcorr)+1 from idpcon where idpconpref = #{param1}), #{param2}, #{param3}, #{param4}, current::datetime hour to SECOND, TODAY)
+    </insert>
+
+    <update id="updateClasificador" parameterType="Clasificador">
+        update idpcon set idpcondesc = #{param3}, idpconabre = #{param4}, idpconuser = #{param5}, idpconhora = current::datetime hour to SECOND, idpconfpro = TODAY
+        where idpconpref = #{param1} and idpconcorr = #{param2};
+    </update>
+
+<!--    -->
+    <select id="listAllIdpcon" resultType="Clasificador" resultMap="result">
+        select idpconpref as prefijo, idpconcorr as correlativo, trim(idpcondesc) as descripcion, trim(idpconabre) as abreviacion, 'IDPCON' as tabla from idpcon order by idpconpref, idpconcorr, idpconabre;
+    </select>
+    <select id="listAllRecon" resultType="Clasificador" resultMap="result">
+        select reconpref as prefijo, reconcorr as correlativo, trim(recondesc) as descripcion, trim(reconabre) as abreviacion, 'RECON' as tabla from recon order by reconpref, reconcorr, reconabre;
+    </select>
+    <select id="listAllPrcon" resultType="Clasificador" resultMap="result">
+        select prconpref as prefijo, prconcorr as correlativo, trim(prcondesc) as descripcion, trim(prconabre) as abreviacion, 'PRCON' as tabla from prcon order by prconpref, prconcorr, prconabre;
+    </select>
+    <select id="listAllGbcon" resultType="Clasificador" resultMap="result">
+        select gbconpfij as prefijo, gbconcorr as correlativo, trim(gbcondesc) as descripcion, trim(gbconabre) as abreviacion, 'GBCON' as tabla from gbcon order by gbconpfij, gbconcorr, gbconabre;
+    </select>
+
+<!--    -->
+    <select id="listByPrefijoIdpcon" resultType="Clasificador" resultMap="result">
+        select idpconpref as prefijo, idpconcorr as correlativo, trim(idpcondesc) as descripcion, trim(idpconabre) as abreviacion, 'IDPCON' as tabla from idpcon where idpconcorr != 0 and idpconpref = #{param1} order by idpconcorr
+    </select>
+    <select id="listByPrefijoRecon" resultType="Clasificador" resultMap="result">
+        select reconpref as prefijo, reconcorr as correlativo, trim(recondesc) as descripcion, trim(reconabre) as abreviacion, 'RECON' as tabla from recon where reconcorr != 0 and reconpref = #{param1} order by reconcorr
+    </select>
+    <select id="listByPrefijoPrcon" resultType="Clasificador" resultMap="result">
+        select prconpref as prefijo, prconcorr as correlativo, trim(prcondesc) as descripcion, trim(prconabre) as abreviacion, 'PRCON' as tabla from prcon where prconcorr != 0 and prconpref = #{param1} order by prconcorr
+    </select>
+    <select id="listByPrefijoGbcon" resultType="Clasificador" resultMap="result">
+        select gbconpfij as prefijo, gbconcorr as correlativo, trim(gbcondesc) as descripcion, trim(gbconabre) as abreviacion, 'GBCON' as tabla from gbcon where gbconcorr != 0 and gbconpfij = #{param1} order by gbconcorr
+    </select>
+
+<!--    -->
+    <select id="findByPrefijoByCorrelativoIdpcon" resultType="Clasificador" resultMap="result">
+        select idpconpref as prefijo, idpconcorr as correlativo, trim(idpcondesc) as descripcion, trim(idpconabre) as abreviacion, 'IDPCON' as tabla from idpcon where idpconpref = #{param1} and idpconcorr = #{param2}
+    </select>
+    <select id="findByPrefijoByCorrelativoRecon" resultType="Clasificador" resultMap="result">
+        select reconpref as prefijo, reconcorr as correlativo, trim(recondesc) as descripcion, trim(reconabre) as abreviacion, 'RECON' as tabla from recon where reconpref = #{param1} and reconcorr = #{param2}
+    </select>
+    <select id="findByPrefijoByCorrelativoPrcon" resultType="Clasificador" resultMap="result">
+        select prconpref as prefijo, prconcorr as correlativo, trim(prcondesc) as descripcion, trim(prconabre) as abreviacion, 'PRCON' as tabla from prcon where prconpref = #{param1} and prconcorr = #{param2}
+    </select>
+    <select id="findByPrefijoByCorrelativoGbcon" resultType="Clasificador" resultMap="result">
+        select gbconpfij as prefijo, gbconcorr as correlativo, trim(gbcondesc) as descripcion, trim(gbconabre) as abreviacion, 'GBCON' as tabla from gbcon where gbconpfij = #{param1} and gbconcorr = #{param2}
+    </select>
+
+</mapper>

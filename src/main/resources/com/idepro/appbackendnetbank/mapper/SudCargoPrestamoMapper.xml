@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.SudCargoPrestamoRepository">
+
+    <resultMap type="SudCargoPrestamo" id="result">
+        <result property="numeroPrestamo" column="numero_prestamo"/>
+        <result property="idCargo" column="id_cargo"/>
+        <result property="cargo" column="cargo"/>
+        <result property="monto" column="monto"/>
+        <result property="usuario" column="usuario"/>
+        <result property="fechaProceso" column="fecha_proceso"/>
+        <result property="hora" column="hora"/>
+    </resultMap>
+
+    <select id="listCargoByNumeroPrestamo" resultType="SudCargoPrestamo" resultMap="result">
+        select prcgcnpre as numero_prestamo, prcgccarg as id_cargo, (select trim(prcgpdesc) from prcgp where prcgpcarg = prcgccarg) as cargo, prcgcmont as monto, trim(prcgcuser) as usuario, prcgcfpro as fecha_proceso, prcgchora as hora
+        from prcgc where prcgcnpre = #{param1}
+    </select>
+
+    <select id="findCargoByNumeroPrestamoByIdCargo" resultType="SudCargoPrestamo" resultMap="result">
+        select prcgcnpre as numero_prestamo, prcgccarg as id_cargo, (select trim(prcgpdesc) from prcgp where prcgpcarg = prcgccarg) as cargo, prcgcmont as monto, trim(prcgcuser) as usuario, prcgcfpro as fecha_proceso, prcgchora as hora
+        from prcgc where prcgcnpre = #{param1} and prcgccarg = #{param2}
+    </select>
+
+    <insert id="saveCargoPrestamo" parameterType="SudCargoPrestamo">
+        insert into prcgc (prcgcnpre, prcgccarg, prcgcmont, prcgcntra, prcgcmrcb, prcgcuser, prcgchora, prcgcfpro, prcgcmblq)
+        values (#{param1}, #{param2}, #{param3}, null, 0, #{param4}, current::datetime hour to SECOND, TODAY, 'N');
+    </insert>
+
+</mapper>

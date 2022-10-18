@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.CdAgenciaRepository">
+
+    <resultMap type="CdAgencia" id="result">
+        <result property="idAgencia" column="gbofinofi"/>
+        <result property="agencia" column="gbofidesc"/>
+        <result property="idZona" column="gbofinsuc"/>
+    </resultMap>
+
+    <select id="findByIdAgencia" resultType="CdAgencia" resultMap="result">
+        select gbofinofi, trim(gbofidesc) as gbofidesc,
+        (case
+        when gbofinofi in (1) then 1
+        when gbofinofi in (3) then 3
+        when gbofinofi in (5,4,26) then 4
+        when gbofinofi in (6) then 6
+        when gbofinofi in (8,20) then 8
+        when gbofinofi in (9,10,11,19,23) then 9
+        when gbofinofi in (12,13,14,21,22,27) then 12
+        when gbofinofi in (15,16,17,18) then 15 else 0 end)as gbofinsuc
+        from gbofi where gbofinofi = #{param1};
+    </select>
+
+    <select id="listAll" resultType="CdAgencia" resultMap="result">
+        select gbofinofi, trim(gbofidesc) as gbofidesc,
+        (case
+        when gbofinofi in (1) then 1
+        when gbofinofi in (3) then 3
+        when gbofinofi in (5,4,26) then 4
+        when gbofinofi in (6) then 6
+        when gbofinofi in (8,20) then 8
+        when gbofinofi in (9,10,11,19,23) then 9
+        when gbofinofi in (12,13,14,21,22,27) then 12
+        when gbofinofi in (15,16,17,18) then 15 else 0 end)as gbofinsuc
+        from gbofi;
+    </select>
+
+</mapper>

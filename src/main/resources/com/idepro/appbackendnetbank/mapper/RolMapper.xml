@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.RolRepository">
+
+    <resultMap type="Rol" id="result">
+        <id property="idRol" column="idrolnrol"/>
+        <result property="nombre" column="idrolnomb"/>
+        <result property="estado" column="idrolstat"/>
+        <result property="addUser" column="idroluser"/>
+        <result property="hora" column="idrolhora"/>
+        <result property="addDate" column="idrolfpro"/>
+    </resultMap>
+
+    <select id="findOne" resultType="Rol" resultMap="result">
+        select * from idrol where idrolnrol = #{idRol}
+    </select>
+
+</mapper>

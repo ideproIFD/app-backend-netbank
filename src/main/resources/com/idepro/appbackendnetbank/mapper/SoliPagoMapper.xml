@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.SoliPagoRepository">
+
+    <resultMap type="SoliPago" id="result">
+        <result property="ciclo" column="ciclo"/>
+        <result property="codigo" column="codigo"/>
+        <result property="carnet" column="carnet"/>
+        <result property="extencion" column="extencion"/>
+        <result property="nombre" column="nombre"/>
+        <result property="celular" column="celular"/>
+        <result property="vendedor" column="vendedor"/>
+        <result property="monto" column="monto"/>
+        <result property="transaccion" column="transaccion"/>
+        <result property="fechaAbono" column="fechaAbono"/>
+        <result property="observacion" column="observacion"/>
+    </resultMap>
+
+    <select id="listAll" resultType="SoliPago" resultMap="result">
+        select
+        prmprnpre as ciclo,
+        prmprnpre ||'-'||to_char(today, '%Y%m%d') as codigo,
+        case when gbagetper = '1'
+        then
+        (case when
+        gbagendid like '%LP%' or
+        gbagendid like '%CB%' or
+        gbagendid like '%TJ%' or
+        gbagendid like '%OR%' or
+        gbagendid like '%PO%' or
+        gbagendid like '%PA%' or
+        gbagendid like '%CH%' or
+        gbagendid like '%SC%' or
+        gbagendid like '%BE%'
+        then SUBSTR(trim(gbagendid),1,(length(trim(gbagendid))-2))
+        else trim(gbagendid)
+        end
+        )
+        else trim(gbagenruc) end
+        as carnet,
+        case
+        when gbagendid like '%LP%' then 'LP'
+        when gbagendid like '%CB%' then 'CB'
+        when gbagendid like '%TJ%' then 'TJ'
+        when gbagendid like '%OR%' then 'OR'
+        when gbagendid like '%PO%' then 'PO'
+        when gbagendid like '%PA%' then 'PA'
+        when gbagendid like '%CH%' then 'CH'
+        when gbagendid like '%SC%' then 'SC'
+        when gbagendid like '%BE%' then 'BE'
+        else ''
+        end
+        as extencion,
+        trim(gbagenomb) as nombre,
+        case when gbdaccelu like '' or gbdaccelu is null then null else trim(gbdaccelu) end as celular,
+        '' as vendedor,
+        0 as monto,
+        0 as transaccion,
+        '' as fecha,
+        '' as observacion
+        from prmpr inner join gbage on prmprcage = gbagecage inner join gbdac on prmprcage = gbdaccage
+        where prmprstat in (2,3,4,5,6,7,8) and gbagetper != 18
+        order by prmprnpre
+    </select>
+
+</mapper>

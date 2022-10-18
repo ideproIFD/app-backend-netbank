@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.CdHistorialPagoRepository">
+
+    <resultMap type="CdHistorialPago" id="result">
+        <result property="idCredito" column="prtdtnpre"/>
+        <result property="fechaPago" column="prtdtftra"/>
+        <result property="monto" column="prtdtimpp"/>
+    </resultMap>
+
+    <select id="listAll" resultType="CdHistorialPago" resultMap="result">
+        select prtdtnpre, prtdtftra, abs(prtdtimpp) as prtdtimpp  from prtdt where prtdtttrn = 2 and prtdtpref = 20 and prtdtccon = 1 and prtdtmrcb = 0 and prtdtnpre in (select prmprnpre from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701));
+    </select>
+
+    <select id="listByFecha" resultType="CdHistorialPago" resultMap="result">
+        select prtdtnpre, prtdtftra, abs(prtdtimpp) as prtdtimpp  from prtdt
+        where prtdtttrn = 2 and prtdtpref = 20 and prtdtccon = 1 and prtdtmrcb = 0 and prtdtnpre in (select prmprnpre from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701)) and prtdtfpro = to_date(#{param1},"%d%m%Y");
+    </select>
+
+</mapper>

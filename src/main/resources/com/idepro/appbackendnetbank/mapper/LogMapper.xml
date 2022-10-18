@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.LogRepository">
+
+    <resultMap type="Log" id="result">
+        <result property="usuario" column="idplogusrn"/>
+        <result property="nombre" column="idplognomb"/>
+        <result property="direccionUrl" column="idplogdurl"/>
+        <result property="respuesta" column="idplogresp"/>
+        <result property="ubicacionDetalle" column="idplogudet"/>
+        <result property="addUser" column="idploguser"/>
+        <result property="hora" column="idploghora"/>
+        <result property="addDate" column="idplogfpro"/>
+    </resultMap>
+
+    <insert id="saveLog" parameterType="Log">
+        INSERT INTO idplog (idplogusrn, idplognomb, idplogdurl, idplogresp, idplogudet, idploguser, idploghora, idplogfpro)
+        VALUES(#{param1}, #{param2}, #{param3}, #{param4}, #{param5}, #{param6}, current::datetime hour to SECOND, TODAY);
+    </insert>
+
+</mapper>

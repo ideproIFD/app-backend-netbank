@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.SudCuotaPagadaRepository">
+
+    <resultMap type="SudCuotaPagada" id="result">
+        <result property="numeroTransaccion" column="prtdtntra"/>
+        <result property="fecha" column="prtdtftra"/>
+        <result property="descripcion" column="prtdtdesc"/>
+        <result property="importe" column="prtdtimpp"/>
+    </resultMap>
+
+    <select id="listCuotaPagadaByNumeroPrestamo" resultType="SudCuotaPagada" resultMap="result">
+        select prtdtntra, prtdtftra, prtdtdesc, prtdtimpp from prtdt where prtdtnpre = #{numeroPrestamo}
+    </select>
+
+</mapper>

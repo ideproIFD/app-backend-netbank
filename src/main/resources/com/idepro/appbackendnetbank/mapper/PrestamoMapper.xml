@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.PrestamoRepository">
+
+    <resultMap type="Prestamo" id="result">
+        <result property="idPrestamo" column="prmprnpre"/>
+        <result property="idEstado" column="prmprstat"/>
+        <result property="estado" column="prcondesc"/>
+    </resultMap>
+
+    <select id="listByIdCliente" resultType="Prestamo" resultMap="result">
+        select  prmprnpre,prmprstat,trim(prcondesc) prcondesc from prmpr
+        inner join prcon on prconcorr = prmprstat
+        where prmprcage = #{idCliente} and prconpref = 4
+    </select>
+
+    <select id="listByNumeroPrestamo" resultType="Prestamo" resultMap="result">
+        select prmprnpre, prmprcage from prmpr where prmprstat in (2,5,6) and prmprcage in (select gbagecage from gbage where gbagendid like '%' || #{numeroDocumento} || '%')
+    </select>
+
+    <resultMap type="DatosSolicitud" id="result_solicitud">
+        <result property="idSucursal" column="id_sucursal"/>
+        <result property="sucursal" column="sucursal"/>
+        <result property="idAgencia" column="id_agencia"/>
+        <result property="agencia" column="agencia"/>
+        <result property="localidad" column="ciudad_localidad"/>
+        <result property="codOficial" column="cod_oficial"/>
+        <result property="oficialNombre" column="nombre_oficial_credito"/>
+        <result property="idTipoCredito" column="id_tipo_credito"/>
+        <result property="tipoCredito" column="tipo_credito"/>
+        <result property="idTipoCliente" column="id_tipo_cliente"/>
+        <result property="tipoCliente" column="tipo_cliente"/>
+        <result property="tipoOperacion" column="tipo_operacion"/>
+        <result property="idPrestamo" column="nro_solicitud"/>
+        <result property="fechaSolicitud" column="fecha_solicitud"/>
+        <result property="montoSolicitado" column="monto_solicitado"/>
+        <result property="idMoneda" column="id_moneda_solicitada"/>
+        <result property="moneda" column="moneda_solicitada"/>
+        <result property="plazoSolicitud" column="plazo"/>
+        <result property="frecuenciaPago" column="frecuencia_pago_solicitado"/>
+        <result property="idLinea" column="numero_linea"/>
+        <result property="idMonedaLinea" column="id_moneda_linea"/>
+        <result property="monedaLinea" column="moneda_linea"/>
+        <result property="montoAprobadoLinea" column="monto_aprobado_linea"/>
+        <result property="fechaAprobacionLinea" column="fecha_registro_linea"/>
+        <result property="tasaAnualReferencial" column="tasa_referencia"/>
+        <result property="cantidadObligados" column="cantidad_obligados"/>
+        <result property="idEstadoPrestamo" column="id_estado_credito"/>
+        <result property="estadoPrestamo" column="estado_credito"/>
+
+    </resultMap>
+    <select id="listSolicitudByIdPrestamo" resultType="DatosSolicitud" resultMap="result_solicitud">
+        select
+(Case
+	When prmpragen In (3) Then 3
+	When prmpragen In (4, 5, 26) Then 4
+	When prmpragen In (8, 20) Then 8
+	When prmpragen In (6) Then 6
+	When prmpragen In (9, 10, 11, 19, 23) Then 9
+	When prmpragen In (12, 13, 14, 21, 22, 27) Then 12
+	When prmpragen In (15, 16, 17, 18) Then 15
+	End)  id_sucursal,
+	trim((select
+case when gbofinofi in (3) then 'SUCURSAL EL ALTO'
+when gbofinofi in (5,4,26) then 'SUCURSAL ORURO'
+when gbofinofi in (6) then 'SUCURSAL  COCHABAMBA'
+when gbofinofi in (8,20) then 'SUCURSAL POTOSI'
+when gbofinofi in (10,11,19,23,9) then 'SUCURSAL  TARIJA'
+when gbofinofi in (12,14) then 'SUCURSAL SANTA CRUZ'
+when gbofinofi in (15,16,18) then 'SUCURSAL COBIJA' else 'SUCURSAL NO ACTIVO' end as sucursal
+from gbofi where gbofinofi = prmpragen)) sucursal,
+prmpragen id_agencia,
+(select trim(gbofidesc) from gbofi where gbofinofi = prmpragen) agencia,
+(select trim(gbciudesc) from gbciu where gbciuciud = prmprciud) ciudad_localidad,
+prmprrseg cod_oficial,
+(select trim(gbfirnomb) from gbfir where gbfircfun =prmprrseg) nombre_oficial_credito,
+prmprtcre id_tipo_credito,
+(select trim(prtcrdesc) from prtcr where prtcrtcre = prmprtcre ) tipo_credito,
+(select gbagetper from gbage where gbagecage = prmprcage) id_tipo_cliente,
+(select trim(gbcondesc) from gbcon   where gbconpfij = 1 and gbconcorr = (select gbagetper from gbage where gbagecage = prmprcage)) tipo_cliente,
+'' tipo_operacion,
+prmprnpre nro_solicitud,
+prmprfreg fecha_solicitud,
+(case when prmprmapt is not null then prmprmapt else null  end)  monto_solicitado,
+prmprcmon id_moneda_solicitada,
+(select trim(gbcondesc) gbcondesc from gbcon where gbconpfij = 5  and gbconcorr = prmprcmon) moneda_solicitada,
+prmprplzo plazo,
+prmprdiap frecuencia_pago_solicitado,
+prmprlncr numero_linea,
+(select lcmlccmon from lcmlc where lcmlcnrlc = prmprlncr)  id_moneda_linea,
+(select trim(gbcondesc) gbcondesc from gbcon where gbconpfij = 10  and gbconcorr = (select lcmlccmon from lcmlc where lcmlcnrlc = prmprlncr)) moneda_linea,
+(select lcmlcmapr from lcmlc where lcmlcnrlc = prmprlncr)  monto_aprobado_linea,
+(select lcmlcfreg from lcmlc where lcmlcnrlc = prmprlncr)  fecha_registro_linea,
+(select tbas + tspr  from taspret_vi  where npre = prmprnpre)  tasa_referencia,
+(select count(prdeunpre) from prdeu  where prdeunpre = prmprnpre and prdeutres = 1) cantidad_obligados,
+prmprstat  id_estado_credito,
+(select trim(prcondesc) prcondesc from  prcon  where prconcorr =  prmprstat  and prconpref = 4) estado_credito
+from prmpr where prmprnpre =  #{idPrestamo} -- and prmprtcre not in (10,11, 12,17)
+    </select>
+    <resultMap type="Garantia" id="result_garantia">
+        <result property="tipoGarantia" column="tipo_garantia"/>
+        <result property="garantia" column="garantia"/>
+        <result property="monto" column="monto"/>
+        <result property="idMoneda" column="id_moneda"/>
+        <result property="moneda" column="moneda"/>
+    </resultMap>
+    <select id="listGarantiaByIdPrestamo" resultType="Garantia" resultMap="result_garantia">
+        select  prgartgar tipo_garantia,TRIM((select gbtgadesc descripcion_garantia from gbtga where gbtgactga=prgartgar)) garantia,prgarmont monto,prgarcmon id_moneda,(select trim(gbcondesc) gbcondesc from gbcon where gbconpfij = 10  and gbconcorr = prgarcmon) moneda from prgar  where prgarnpre =  #{idPrestamo}
+    </select>
+    <resultMap type="DatosOperacion" id="result_dato_operacion">
+        <result property="idNumeroOperacion" column="numero_prestamo"/>
+        <result property="montoAprobado" column="monto_aprobado"/>
+        <result property="idMoneda" column="id_moneda"/>
+        <result property="moneda" column="moneda"/>
+        <result property="idDestinoCredito" column="id_destino_credito"/>
+        <result property="destinoCredito" column="destino_credito"/>
+        <result property="montoDesembolsado" column="monto_desembolsado"/>
+        <result property="idEstadoOperacion" column="id_estado_operacion"/>
+        <result property="estadoOperacion" column="estado_operacion"/>
+        <result property="idRubro" column="id_rubro"/>
+        <result property="rubro" column="rubro"/>
+        <result property="idResponsableSeguimiento" column="id_responsable_seguimiento"/>
+        <result property="responsableSeguimiento" column="responsable_seguimiento"/>
+        <result property="plazo" column="plazo"/>
+        <result property="frecuenciaPago" column="frecuencia_pago"/>
+        <result property="fechaReprogramacion" column="fecha_reprogramacion"/>
+        <result property="fechaVencimiento" column="fecha_vencimiento_actual"/>
+        <result property="fechaDesembolso" column="fecha_desembolso"/>
+        <result property="diasIncumplidos" column="dias_incumplidos"/>
+        <result property="saldoCapitalAfecha" column="saldo_capital_afecha"/>
+    </resultMap>
+    <select id="datoOperacionByIdPrestamo" resultType="DatosOperacion" resultMap="result_dato_operacion">
+       select  prmprnpre numero_prestamo,prmprmapt monto_aprobado,
+prmprcmon id_moneda,
+(select trim(gbcondesc) gbcondesc from gbcon where gbconpfij = 10  and gbconcorr = prmprcmon) moneda,
+prmprdest id_destino_credito,
+(select trim(prcondesc) from prcon where prconcorr = prmprdest  and prconpref = 50) destino_credito,
+prmprmdes monto_desembolsado,prmprstat id_estado_operacion,
+(select trim(prcondesc) prcondesc from  prcon  where prconcorr =  prmprstat  and prconpref = 4) estado_operacion,
+prmprrubr id_rubro,
+'' rubro,
+prmprrseg id_responsable_seguimiento,
+(select trim(gbfirnomb) from gbfir where gbfircfun =prmprrseg) responsable_seguimiento,
+prmprplzo plazo,prmprdiap frecuencia_pago,prmprfrpg fecha_reprogramacion,
+prmprfvac fecha_vencimientos_actual,prmprfdes fecha_desembolso,
+0 dias_incumplidos,
+ prmprsald saldo_capital_afecha
+from prmpr where prmprnpre = #{idPrestamo}
+    </select>
+
+    <resultMap type="ideprotege" id="result_ideprotege">
+        <result property="id" column="id"/>
+        <result property="tipo" column="tipo"/>
+        <result property="monto" column="monto"/>
+        <result property="moneda" column="moneda"/>
+        <result property="dato1" column="dato_1"/>
+        <result property="dato2" column="dato_2"/>
+        <result property="dato3" column="dato_3"/>
+        <result property="dato4" column="dato_4"/>
+        <result property="dato5" column="dato_5"/>
+        <result property="dato6" column="dato_6"/>
+        <result property="dato7" column="dato_7"/>
+        <result property="dato8" column="dato_8"/>
+        <result property="idTipoPago" column="id_tipo_pago"/>
+        <result property="tipoPago" column="tipo_pago"/>
+        <result property="idTipoVehiculo" column="id_tipo_vehiculo"/>
+        <result property="tipoVehiculo" column="tipo_vehiculo"/>
+        <result property="fechaProceso" column="fecha_proceso"/>
+        <result property="tasa" column="tasa"/>
+        <result property="origen" column="origen"/>
+        <result property="valor" column="valor"/>
+    </resultMap>
+    <select id="ideprotegeByIdPrestamo" resultType="ideprotege" resultMap="result_ideprotege">
+        select idrelgtia id,idreltipo tipo,idrelmont monto,idreldat1 dato_1,idreldat2 dato_2,idreldat3 dato_3,idreldat4 dato_4,idreldat5 dato_5,idreldat6 dato_6,idreldat7 dato_7,idreldat8 dato_8,idreltpag id_tipo_pago,(select idptgpval from idptg where idptgdesc = idreltpag) tipo_pago,idreltveh id_tipo_vehiculo,(select idptgpval from idptg where idptgdesc = idreltveh) as tipo_vehiculo,idrelfpro fecha_proceso,idreltasa tasa,idrelorig origen,idrelvalo valor from idrel where idrelnpre  = #{idPrestamo}
+    </select>
+
+
+    <resultMap type="Cargo" id="result_cargos">
+        <result property="idCargo" column="id_cargo"/>
+        <result property="cargo" column="cargo"/>
+        <result property="montoCargoPrestamo" column="monto_cargo_prestamo"/>
+        <result property="monedaCargo" column="moneda_cargo"/>
+    </resultMap>
+    <select id="cargoByIdPrestamo" resultType="Cargo" resultMap="result_cargos">
+        select prcgccarg as id_cargo, trim(prcgpdesc)  cargo, prcgcmont as monto_cargo_prestamo, (select trim(gbcondesc) from gbcon where gbconpfij = 10 and gbconcorr = prcgpcmon) as moneda_cargo from prcgc join prcgp on prcgccarg = prcgpcarg where prcgcnpre  = #{idPrestamo}
+    </select>
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.PlanPagoRepository">
+
+    <resultMap type="PlanPago" id="result">
+        <result property="numeroPago" column="prppgnpag"/>
+        <result property="fecha" column="prppgfech"/>
+    </resultMap>
+
+    <select id="listPlanPagoByIdPrestamo" resultType="PlanPago" resultMap="result">
+        select prppgnpag, prppgfech from prppg where prppgnpre = #{param1};
+    </select>
+
+</mapper>

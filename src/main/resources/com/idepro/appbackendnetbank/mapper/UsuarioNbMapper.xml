@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.UsuarioNbRepository">
+    <resultMap type="UsuarioNB" id="result_usuario_nb">
+        <result property="idSucursal" column="id_sucursal"/>
+        <result property="sucursal" column="sucursal"/>
+        <result property="idAgencia" column="id_agencia"/>
+        <result property="agencia" column="agencia"/>
+        <result property="firma" column="firma"/>
+        <result property="nombre" column="nombre"/>
+        <result property="usuario" column="usuario"/>
+        <result property="estado" column="estado"/>
+    </resultMap>
+    <select id="findUsuarioNbByIdUsuarioByEstado" resultType="UsuarioNB" resultMap="result_usuario_nb">
+        select
+    (Case When adusragen In (1)
+      Then 1
+      When adusragen In (3)
+      Then 3
+      When adusragen In (4, 5, 8, 20, 26)
+      Then 4
+      When adusragen In (6)
+      Then 6
+      When adusragen In (9, 10, 11, 19, 23)
+      Then 9
+      When adusragen In (12, 13, 14, 21, 22, 27)
+      Then 12
+      When adusragen In (15, 16, 17, 18)
+      Then 15
+      End) id_sucursal,
+    (Case When adusragen In (1)
+      Then trim('OFICINA NACIONAL')
+      When adusragen In (3)
+      Then trim('SUCURSAL EL ALTO')
+      When adusragen In (4, 5, 8, 20, 26)
+      Then trim('SUCURSAL ORURO')
+      When adusragen In (6)
+      Then trim('SUCURSAL COCHABAMBA')
+      When adusragen In (9, 10, 11, 19, 23)
+      Then trim('SUCURSAL TARIJA')
+      When adusragen In (12, 13, 14, 21, 22, 27)
+      Then trim('SUCURSAL SANTA CRUZ')
+      When adusragen In (15, 16, 17, 18)
+      Then trim('SUCURSAL COBIJA')
+      End) sucursal,
+    adusragen id_agencia,
+    (select trim(gbofidesc) from gbofi where gbofinofi = adusragen) agencia,
+    (select  gbfircfun from gbfir where gbfircfun = adusrtelf ) firma,
+    UPPER(trim(adusrnomb)) nombre,
+    trim(adusrusrn) usuario,
+    trim(case when adusrmrcb = 0 then 'ACTIVO' when adusrmrcb = 9 then 'NO ACTIVO' else 'OTRO' end) as estado
+    from adusr where UPPER(adusrusrn) = UPPER(#{param1}) and adusrmrcb = #{param2}
+    </select>
+    <select id="findUsuarioNbFirmaActivoByIdUsuario" resultType="UsuarioNB" resultMap="result_usuario_nb">
+    select
+    (Case When adusragen In (1)
+      Then 1
+      When adusragen In (3)
+      Then 3
+      When adusragen In (4, 5, 8, 20, 26)
+      Then 4
+      When adusragen In (6)
+      Then 6
+      When adusragen In (9, 10, 11, 19, 23)
+      Then 9
+      When adusragen In (12, 13, 14, 21, 22, 27)
+      Then 12
+      When adusragen In (15, 16, 17, 18)
+      Then 15
+      End) id_sucursal,
+    (Case When adusragen In (1)
+      Then trim('OFICINA NACIONAL')
+      When adusragen In (3)
+      Then trim('SUCURSAL EL ALTO')
+      When adusragen In (4, 5, 8, 20, 26)
+      Then trim('SUCURSAL ORURO')
+      When adusragen In (6)
+      Then trim('SUCURSAL COCHABAMBA')
+      When adusragen In (9, 10, 11, 19, 23)
+      Then trim('SUCURSAL TARIJA')
+      When adusragen In (12, 13, 14, 21, 22, 27)
+      Then trim('SUCURSAL SANTA CRUZ')
+      When adusragen In (15, 16, 17, 18)
+      Then trim('SUCURSAL COBIJA')
+      End) sucursal,
+    adusragen id_agencia,
+    (select trim(gbofidesc) from gbofi where gbofinofi = adusragen) agencia,
+    adusrtelf firma,
+    UPPER(trim(adusrnomb)) nombre,
+    trim(adusrusrn) usuario,
+    trim(case when adusrmrcb = 0 then 'ACTIVO' when adusrmrcb = 9 then 'NO ACTIVO' else 'OTRO' end) as estado
+    from adusr where adusrtelf is not null and adusrmrcb = 0 and UPPER(adusrusrn) = UPPER(#{param1})
+    </select>
+</mapper>

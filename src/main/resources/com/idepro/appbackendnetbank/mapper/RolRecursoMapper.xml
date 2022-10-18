@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.RolRecursoRepository">
+
+    <resultMap type="RolRecurso" id="result">
+        <result property="idRol" column="idrolnrol"/>
+        <result property="rol" column="rol"/>
+        <result property="idRecurso" column="idrolnrec"/>
+        <result property="recurso" column="recurso"/>
+        <result property="addUser" column="idroluser"/>
+        <result property="hora" column="idrolhora"/>
+        <result property="addDate" column="idrolfpro"/>
+    </resultMap>
+
+    <select id="listAll" resultType="RolRecurso" resultMap="result">
+        select idrolnrol, (select trim(idpcondesc) from idpcon where idpconpref = 5 and idpconcorr = idrolnrol)as rol,
+        idrolnrec, (select trim(idpcondesc) from idpcon where idpconpref = 6 and idpconcorr = idrolnrec) as recurso, idroluser, idrolhora, idrolfpro from idrol
+    </select>
+
+    <select id="listByIdRol" resultType="RolRecurso" resultMap="result">
+        select idrolnrol, (select trim(idpcondesc) from idpcon where idpconpref = 5 and idpconcorr = idrolnrol)as rol,
+        idrolnrec, (select trim(idpcondesc) from idpcon where idpconpref = 6 and idpconcorr = idrolnrec) as recurso, idroluser, idrolhora, idrolfpro from idrol where idrolnrol = #{idRol}
+    </select>
+
+    <select id="findByIdRolByIdRecurso" resultType="RolRecurso" resultMap="result">
+        select idrolnrol, (select trim(idpcondesc) from idpcon where idpconpref = 5 and idpconcorr = idrolnrol)as rol,
+        idrolnrec, (select trim(idpcondesc) from idpcon where idpconpref = 6 and idpconcorr = idrolnrec) as recurso, idroluser, idrolhora, idrolfpro from idrol where idrolnrol = #{param1} and idrolnrec = #{param2}
+    </select>
+
+    <insert id="saveRolRecurso" parameterType="RolRecurso">
+        insert into idrol (idrolnrol, idrolnrec, idroluser, idrolhora, idrolfpro)
+        values (#{param1}, #{param2}, #{param3}, current::datetime hour to SECOND, TODAY);
+    </insert>
+
+    <delete id="deleteRolRecursoByIdRol" parameterType="RolRecurso">
+        delete from idrol where idrolnrol = #{idRol};
+    </delete>
+
+</mapper>
