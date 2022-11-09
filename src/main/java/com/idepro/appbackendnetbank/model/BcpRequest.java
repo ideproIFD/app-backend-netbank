@@ -17,11 +17,11 @@ public class BcpRequest {
     @JsonProperty("codigo_busqueda")
     private String codigoBusqueda;
     @JsonProperty("id_transaccion")
-    private Integer idTransaccion;
+    private String idTransaccion;
     @JsonProperty("fecha_pago")
     private String fechaPago;
     @JsonProperty("monto_total")
-    private String montoTotal; // Dato cambiado REVISAR
+    private String montoTotal;
     @JsonProperty("nombre_factura")
     private String nombreFactura;
     private String nit;
@@ -35,6 +35,10 @@ public class BcpRequest {
     private Integer idReversion;
     @JsonProperty("fecha_reversion")
     private String fechaReversion;
+    @JsonProperty("fecha_inicio")
+    private String fechaInicio;
+    @JsonProperty("fecha_final")
+    private String fechaFinal;
 
 
     public BcpRequest() {

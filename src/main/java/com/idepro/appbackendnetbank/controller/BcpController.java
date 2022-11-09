@@ -15,6 +15,10 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletRequest;
 import javax.swing.text.html.parser.Entity;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.idepro.appbackendnetbank.util.ConstantsUtil.*;
 
 @RestController
 @RequestMapping("/bcp")
@@ -126,6 +130,81 @@ public class BcpController {
         logService.save(log, request.getRequestURI(), response.toString());
         return responseEntity;
     }
+
+    //@PreAuthorize("@rolRecursoServiceImpl.validaRecurso('BCP REVERSION PAGO')")
+    @PostMapping(value = "/estadoTransaccion", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Entity> estadoTransaccion(HttpServletRequest request, @RequestBody BcpRequest requestInput) {
+        ResponseEntity responseEntity;
+        Response<BcpEstadoTransaccion> response;
+        BcpEstadoTransaccion bcpEstadoTransaccion = new BcpEstadoTransaccion();
+
+        String requestValidate = requestInput.requestConsulta(requestInput);
+        if (requestValidate == null) {
+            try {
+                bcpEstadoTransaccion = bcpConsultaService.findByIdEstadoTransaccion(requestInput.getCodigoBusqueda(), requestInput.getFechaPago());
+                if (bcpEstadoTransaccion != null) {
+                    bcpEstadoTransaccion.setCodError(COD_ERROR_1);
+                    bcpEstadoTransaccion.setDescripcion(DESCRIPCION_1);
+                    bcpEstadoTransaccion.setIdTransaccionEmpresa(requestInput.getIdTransaccion());
+                    String fecha = bcpEstadoTransaccion.getFecha();
+                    String[] parts = fecha.split("-");
+                    String anio = parts[0];
+                    String mes = parts[1];
+                    String dia = parts[2];
+                    String fechaM = dia + "/" + mes + "/" + anio;
+                    bcpEstadoTransaccion.setFecha(fechaM);
+                    response = new Response<>(ConstantsUtil.PARAM_MENSAJE_VACIO, ConstantsUtil.PARAM_ESTADO_OK, bcpEstadoTransaccion);
+                    responseEntity = new ResponseEntity<Response>(response, HttpStatus.OK);
+                } else {
+                    response = new Response<>(ConstantsUtil.PARAM_MENSAJE_SIN_REGISTROS, ConstantsUtil.PARAM_ESTADO_NOK, null);
+                    responseEntity = new ResponseEntity<Response>(response, HttpStatus.OK);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                response = new Response<>(ConstantsUtil.MENSAJE_ERROR(e.getLocalizedMessage()), ConstantsUtil.PARAM_ESTADO_NOK, null);
+                responseEntity = new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            response = new Response<>(ConstantsUtil.MENSAJE_ERROR_REQUEST(requestValidate), ConstantsUtil.PARAM_ESTADO_NOK, null);
+            responseEntity = new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
+        }
+        Log log = new Log(rolRecursoService.obtUsuario(), "BCP REVERSION PAGO", request.getRequestURI(), response.getEstado() + " " + response.getMensaje(), "", null);
+        logService.save(log, request.getRequestURI(), response.toString());
+        return responseEntity;
+    }
+
+    //@PreAuthorize("@rolRecursoServiceImpl.validaRecurso('BCP REVERSION PAGO')")
+    @PostMapping(value = "/historialTransacciones", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Entity> historialTransacciones(HttpServletRequest request, @RequestBody BcpRequest requestInput) {
+        ResponseEntity responseEntity;
+        ResponseList<BcpEstadoTransaccion> responseList;
+        List<BcpEstadoTransaccion> bcpEstadoTransaccionList = new ArrayList<>();
+
+        String requestValidate = requestInput.requestConsulta(requestInput);
+        if (requestValidate == null) {
+            try {
+                bcpEstadoTransaccionList = bcpConsultaService.findByIdHistorialTransaccion(requestInput.getFechaInicio(), requestInput.getFechaFinal(),requestInput.getIdTransaccion());
+                if (bcpEstadoTransaccionList.size() > 0) {
+                    responseList = new ResponseList<>(ConstantsUtil.PARAM_MENSAJE_VACIO, ConstantsUtil.PARAM_ESTADO_OK, bcpEstadoTransaccionList);
+                    responseEntity = new ResponseEntity<ResponseList>(responseList, HttpStatus.OK);
+                } else {
+                    responseList = new ResponseList<>(ConstantsUtil.PARAM_MENSAJE_SIN_REGISTROS, ConstantsUtil.PARAM_ESTADO_NOK, null);
+                    responseEntity = new ResponseEntity<ResponseList>(responseList, HttpStatus.OK);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                responseList = new ResponseList<>(ConstantsUtil.MENSAJE_ERROR(e.getLocalizedMessage()), ConstantsUtil.PARAM_ESTADO_NOK, null);
+                responseEntity = new ResponseEntity<ResponseList>(responseList, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            responseList = new ResponseList<>(ConstantsUtil.MENSAJE_ERROR_REQUEST(requestValidate), ConstantsUtil.PARAM_ESTADO_NOK, null);
+            responseEntity = new ResponseEntity<ResponseList>(responseList, HttpStatus.BAD_REQUEST);
+        }
+        Log log = new Log(rolRecursoService.obtUsuario(), "BCP REVERSION PAGO", request.getRequestURI(), responseList.getEstado() + " " + responseList.getMensaje(), "", null);
+        logService.save(log, request.getRequestURI(), responseList.toString());
+        return responseEntity;
+    }
+
 
     @Bean
     public RestTemplate restTemplate(){

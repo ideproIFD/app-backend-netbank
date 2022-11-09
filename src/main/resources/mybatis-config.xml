@@ -45,6 +45,7 @@
         <mapper resource="com/idepro/appbackendnetbank/mapper/SudClienteMapper.xml"/>
         <mapper resource="com/idepro/appbackendnetbank/mapper/SudCargoPrestamoMapper.xml"/>
         <mapper resource="com/idepro/appbackendnetbank/mapper/BcpClienteMapper.xml"/>
+        <mapper resource="com/idepro/appbackendnetbank/mapper/BcpTransaccionesMapper.xml"/>
 
         <mapper resource="com/idepro/appbackendnetbank/mapper/LogMapper.xml"/>
     </mappers>

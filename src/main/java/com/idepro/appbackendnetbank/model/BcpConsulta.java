@@ -21,6 +21,8 @@ public class BcpConsulta {
     private BigDecimal importeAdeudadoDecimal;
     @JsonProperty("importe_minimo")
     private BigDecimal importeMinimo;
+    @JsonProperty("importe_minimo_decimal")
+    private BigDecimal importeMinimoDecimal;
     @JsonProperty("importe_comision")
     private BigDecimal importeComision;
     @JsonProperty("nombre_cliente")

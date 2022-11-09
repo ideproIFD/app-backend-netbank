@@ -2,6 +2,7 @@ package com.idepro.appbackendnetbank.service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.idepro.appbackendnetbank.model.*;
+import com.idepro.appbackendnetbank.util.Quote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
@@ -122,11 +123,6 @@ public class WSAxonServiceImpl implements WSAxonService {
     public String reversionPagoCreditofindNumeroTransaccion(BcpRequest requestBody) throws IOException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // CASO DE PRUEBA
-        // http://services-labo-netbank.idepro.org/WSClientAxon/PagoCredito/
-        // objBcpReversion.setIdPago(1755097);        
-        // objBcpReversion.setNumeroCredito("100100500");
 
         String uri = PARAM_IP_WS_AXON + PARAM_WS_REVERSION_PAGO_CREDITO;
 

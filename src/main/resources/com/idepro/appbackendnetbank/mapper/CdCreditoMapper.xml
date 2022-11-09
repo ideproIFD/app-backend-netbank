@@ -32,7 +32,7 @@
     </resultMap>
 
     <select id="listAll" resultType="CdCredito" resultMap="result">
-        select prmprnpre, prmprcage, (select max(idpctacuot) * (case when prmprcmon = 1 then 1 when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 0 end) from idpcta where idpctafpro = today and idpctanpre = prmprnpre) as pagoParaEstarAlDia,
+select prmprnpre, prmprcage, (select max(idpctacuot) * (case when prmprcmon = 1 then 1 when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 0 end) from idpcta where idpctafpro = today and idpctanpre = prmprnpre) as pagoParaEstarAlDia,
         (select prppgtota from prppg where prppgnpre = prmprnpre and prppgfech in (select min(prppgfech) from prppg where prppgfech >= (select gbpmtfdia from gbpmt) and prppgnpre = prmprnpre)) as valorCuota,
         case when prmprfinc is null then 0 else (select gbpmtfdia from gbpmt) - prmprfinc end as diasCapitalMora,
         prmprfreg, prmprfdes,
@@ -53,7 +53,7 @@
         prmprfulp, round((prmprplzo / 30),2)as prmprplzo, round((prmprppgk / 30),2)as prmprppgk, (select count(*) from prppg where prppgnpre = prmprnpre) as cantidadCuotas, prmprtcre,
         (select max(prtsatbas) from prtsa where prtsanpre = prmprnpre and prtsafpro = (select max(prtsafpro) from prtsa where prtsanpre = prmprnpre)) as tasaInteres,
         prmpragen, '' as notaCliente, prmprstat, case when prmprstat in (2,3,4) and prmprfinc is null then 'VIGENTE AL DIA' when prmprstat in (2,3,4) and prmprfinc is not null then 'VIGENTE' when prmprstat = 5 then 'VENCIDO' when prmprstat = 6 then 'EJECUCION' when prmprstat = 7 then 'CASTIGADO' else prmprstat||'' end as estado
-        from prmpr where prmprstat in (2,3,4,5,6) and prmprtcre not in (601,701) order by prmprnpre;
+        from prmpr where prmprstat in (2,3,4,5,6) and prmprtcre not in (601,701);
     </select>
 
     <select id="findByIdCredito" resultType="CdCredito" resultMap="result">

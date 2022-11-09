@@ -16,8 +16,11 @@ public class BcpConsultaPago {
     private BigDecimal importeCuota;
     @JsonProperty("importe_cuota_decimal")
     private BigDecimal importeCuotaDecimal;
+
     @JsonProperty("importe_minimo_cuota")
     private BigDecimal importeMinimoCuota;
+    @JsonProperty("importe_minimo_cuota_decimal")
+    private BigDecimal importeMinimoCuotaDecimal;
     @JsonProperty("mora_cuota")
     private BigDecimal moraCuota;
     @JsonProperty("importe_comision")

@@ -133,8 +133,8 @@ public final class ConstantsUtil {
     public static final String PARAM_P_NO_CUMPLE = "NO CUMPLE";
     public static final String PARAM_P_CUMPLE = "CUMPLE";
 
-  //  public static final String PARAM_IP_WS_AXON = "http://services-labo-netbank.idepro.org/WSClientAxon/";
-    public static final String PARAM_IP_WS_AXON = "http://svr-iis-01.idepro.org/wsIdeproAxonWs/WSClientAxon/";
+      public static final String PARAM_IP_WS_AXON = "http://services-labo-netbank.idepro.org/WSClientAxon/";
+    // public static final String PARAM_IP_WS_AXON = "http://10.0.1.49/wsIdeproAxonWs/WSClientAxon/";
     public static final String PARAM_WS_AXON_PROXIMA_CUOTA = "proximaCuotaCredito/";
     public static final String PARAM_WS_PAGO_CREDITO = "PagoCredito/";
     public static final String PARAM_WS_REVERSION_PAGO_CREDITO = "RevertirPagoCredito/";
@@ -159,5 +159,4 @@ public final class ConstantsUtil {
     public static final String PARAM_SIGLO_1 = "+";
     public static final Integer PARAM_REVERSION_CANAL = 0;
     public static final String PARAM_MESSAGE_REVERSION = "EXITO";
-
 }

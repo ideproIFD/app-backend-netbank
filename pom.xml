@@ -6,7 +6,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.5.22.RELEASE</version>
-<!--        <version>1.5.15.RELEASE</version>-->
+<!--        <version>1.5.15.RELEASE</version>       -->
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.idepro</groupId>
@@ -17,7 +17,6 @@
     <!--    -->
     <name>AppBackendNetbank</name>
     <description>App Backend Netbank</description>
-
     <properties>
         <!--        -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -98,14 +97,12 @@
             <scope>provided</scope>
         </dependency>
         <!-- FIN Para despliegue -->
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>

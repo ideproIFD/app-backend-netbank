@@ -15,7 +15,7 @@ public class BcpPago {
     @JsonProperty("id_transaccion_empresa")
     private BigDecimal idTransaccionEmpresa;
     @JsonProperty("id_transaccion_entidad")
-    private Integer idTransaccionEntidad;
+    private String idTransaccionEntidad;
     @JsonProperty("razon_social")
     private String razonSocial;
     @JsonProperty("casa_matriz")
