@@ -132,8 +132,7 @@ public final class ConstantsUtil {
     public static final String PARAM_P_PRECIO = "PRECIO";
     public static final String PARAM_P_NO_CUMPLE = "NO CUMPLE";
     public static final String PARAM_P_CUMPLE = "CUMPLE";
-
-      public static final String PARAM_IP_WS_AXON = "http://services-labo-netbank.idepro.org/WSClientAxon/";
+    public static final String PARAM_IP_WS_AXON = "http://10.0.1.70/wsIdeproAxonWs/WSClientAxon/";
     // public static final String PARAM_IP_WS_AXON = "http://10.0.1.49/wsIdeproAxonWs/WSClientAxon/";
     public static final String PARAM_WS_AXON_PROXIMA_CUOTA = "proximaCuotaCredito/";
     public static final String PARAM_WS_PAGO_CREDITO = "PagoCredito/";
