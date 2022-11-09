@@ -154,7 +154,7 @@ public final class ConstantsUtil {
     public static final Integer PARAM_CONSULTA_CANAL = 0;
     public static final String PARAM_DETALLE_CUOTA = "PROXIMA CUOTA DE PAGO";
     public static final Integer PARAM_PAGO_CANAL = 0;
-    public static final String PARAM_NUMERO_CC = "0";
+    public static final String PARAM_NUMERO_CC = "";
     public static final String PARAM_ESTADO_MONEDA = "Bs.";
     public static final String PARAM_SIGLO_1 = "+";
     public static final Integer PARAM_REVERSION_CANAL = 0;
