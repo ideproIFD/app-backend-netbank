@@ -2,6 +2,7 @@ package com.idepro.appbackendnetbank.controller;
 
 import com.idepro.appbackendnetbank.model.*;
 import com.idepro.appbackendnetbank.repository.PrestamoRepository;
+import com.idepro.appbackendnetbank.repository.SegOperacionRepository;
 import com.idepro.appbackendnetbank.service.*;
 import com.idepro.appbackendnetbank.util.ConstantsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Create by Freddy Lopez Gomez (jhoenlopez@gmail.com) on 18/11/2020.
- */
+
 @RestController
 @RequestMapping("/seguros")
 public class SegurosController {
@@ -28,6 +27,8 @@ public class SegurosController {
     private DatosSolicitudService datosSolicitudService;
     @Autowired
     private PrestamoRepository prestamoRepository;
+    @Autowired
+    private SegOperacionRepository segOperacionRepository;
     @Autowired
     private UsuarioNBService usuarioNBService;
     @Autowired
@@ -203,6 +204,33 @@ public class SegurosController {
         }
         Log log = new Log(rolRecursoService.obtUsuario(), "OPERACION POR NRO DOCUMENTO", request.getRequestURI(), response.getEstado() + " " + response.getMensaje(), "", usuario);
         logService.save(log, request.getRequestURI(), response.toString());
+        return responseEntity;
+    }
+
+   // @PreAuthorize("@rolRecursoServiceImpl.validaRecurso('SEGURO MI VIDA POR FECHA')")
+    @GetMapping(value = "/miVidaguroPorFechas/{fechaInicial}/{fechaFinal}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseList> miVidaSeguroPorFechas(HttpServletRequest request, @PathVariable("fechaInicial") String fechaInicial, @PathVariable("fechaFinal") String fechaFinal) {
+
+        ResponseEntity responseEntity;
+        List<SegMiVida> segMiVidaArrayList = new ArrayList<>();
+        ResponseList<SegMiVida> responseList;
+
+            try {
+                segMiVidaArrayList = segOperacionRepository.findPorFechas(fechaInicial, fechaFinal);
+                if (segMiVidaArrayList.size() > 0) {
+                    responseList = new ResponseList<>(ConstantsUtil.PARAM_MENSAJE_VACIO, ConstantsUtil.PARAM_ESTADO_OK, segMiVidaArrayList);
+                    responseEntity = new ResponseEntity<ResponseList>(responseList, HttpStatus.OK);
+                } else {
+                    responseList = new ResponseList<>(ConstantsUtil.PARAM_MENSAJE_SIN_REGISTROS, ConstantsUtil.PARAM_ESTADO_NOK, null);
+                    responseEntity = new ResponseEntity<ResponseList>(responseList, HttpStatus.OK);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                responseList = new ResponseList<>(ConstantsUtil.MENSAJE_ERROR(e.getLocalizedMessage()), ConstantsUtil.PARAM_ESTADO_NOK, null);
+                responseEntity = new ResponseEntity<ResponseList>(responseList, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        Log log = new Log(rolRecursoService.obtUsuario(), "SEGURO MI VIDA POR FECHA", request.getRequestURI(), responseList.getEstado() + " " + responseList.getMensaje(), "", null);
+        logService.save(log, request.getRequestURI(), responseList.toString());
         return responseEntity;
     }
 }

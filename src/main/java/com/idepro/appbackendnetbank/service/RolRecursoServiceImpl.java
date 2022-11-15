@@ -31,7 +31,7 @@ public class RolRecursoServiceImpl implements RolRecursoService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {
-//            System.out.println(authentication.getName());
+        //   System.out.println(authentication.getName());
             idRol = authentication.getAuthorities().iterator().next().getAuthority();
 //            for (GrantedAuthority auth : authentication.getAuthorities()) {
 //            }

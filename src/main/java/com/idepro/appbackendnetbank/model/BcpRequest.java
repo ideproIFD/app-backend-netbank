@@ -17,7 +17,9 @@ public class BcpRequest {
     @JsonProperty("codigo_busqueda")
     private String codigoBusqueda;
     @JsonProperty("id_transaccion")
-    private String idTransaccion;
+    private BigDecimal idTransaccion;
+//    @JsonProperty("id_transaccion")
+//    private String idTransaccion;
     @JsonProperty("fecha_pago")
     private String fechaPago;
     @JsonProperty("monto_total")
@@ -31,8 +33,10 @@ public class BcpRequest {
     private List<BcpRequestDetallePago> detallePago;
     @JsonProperty("id_transaccion_empresa")
     private Integer idTransaccionEmpresa;
+//    @JsonProperty("id_reversion")
+//    private String  idReversion;
     @JsonProperty("id_reversion")
-    private Integer idReversion;
+    private Integer  idReversion;
     @JsonProperty("fecha_reversion")
     private String fechaReversion;
     @JsonProperty("fecha_inicio")

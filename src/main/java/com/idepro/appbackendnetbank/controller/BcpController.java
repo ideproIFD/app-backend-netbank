@@ -131,7 +131,7 @@ public class BcpController {
         return responseEntity;
     }
 
-    //@PreAuthorize("@rolRecursoServiceImpl.validaRecurso('BCP REVERSION PAGO')")
+   // @PreAuthorize("@rolRecursoServiceImpl.validaRecurso('BCP ESTADO PAGO')")
     @PostMapping(value = "/estadoTransaccion", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Entity> estadoTransaccion(HttpServletRequest request, @RequestBody BcpRequest requestInput) {
         ResponseEntity responseEntity;
@@ -145,7 +145,7 @@ public class BcpController {
                 if (bcpEstadoTransaccion != null) {
                     bcpEstadoTransaccion.setCodError(COD_ERROR_1);
                     bcpEstadoTransaccion.setDescripcion(DESCRIPCION_1);
-                    bcpEstadoTransaccion.setIdTransaccionEmpresa(requestInput.getIdTransaccion());
+                    //bcpEstadoTransaccion.setIdTransaccionEmpresa(requestInput.getIdTransaccion());
                     String fecha = bcpEstadoTransaccion.getFecha();
                     String[] parts = fecha.split("-");
                     String anio = parts[0];
@@ -168,12 +168,12 @@ public class BcpController {
             response = new Response<>(ConstantsUtil.MENSAJE_ERROR_REQUEST(requestValidate), ConstantsUtil.PARAM_ESTADO_NOK, null);
             responseEntity = new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
         }
-        Log log = new Log(rolRecursoService.obtUsuario(), "BCP REVERSION PAGO", request.getRequestURI(), response.getEstado() + " " + response.getMensaje(), "", null);
+        Log log = new Log(rolRecursoService.obtUsuario(), "BCP ESTADO PAGO", request.getRequestURI(), response.getEstado() + " " + response.getMensaje(), "", null);
         logService.save(log, request.getRequestURI(), response.toString());
         return responseEntity;
     }
 
-    //@PreAuthorize("@rolRecursoServiceImpl.validaRecurso('BCP REVERSION PAGO')")
+   // @PreAuthorize("@rolRecursoServiceImpl.validaRecurso('BCP HISTORIAL PAGO')")
     @PostMapping(value = "/historialTransacciones", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Entity> historialTransacciones(HttpServletRequest request, @RequestBody BcpRequest requestInput) {
         ResponseEntity responseEntity;
@@ -183,7 +183,7 @@ public class BcpController {
         String requestValidate = requestInput.requestConsulta(requestInput);
         if (requestValidate == null) {
             try {
-                bcpEstadoTransaccionList = bcpConsultaService.findByIdHistorialTransaccion(requestInput.getFechaInicio(), requestInput.getFechaFinal(),requestInput.getIdTransaccion());
+                bcpEstadoTransaccionList = null; //bcpConsultaService.findByIdHistorialTransaccion(requestInput.getFechaInicio(), requestInput.getFechaFinal(),requestInput.getIdTransaccion());
                 if (bcpEstadoTransaccionList.size() > 0) {
                     responseList = new ResponseList<>(ConstantsUtil.PARAM_MENSAJE_VACIO, ConstantsUtil.PARAM_ESTADO_OK, bcpEstadoTransaccionList);
                     responseEntity = new ResponseEntity<ResponseList>(responseList, HttpStatus.OK);
@@ -200,7 +200,7 @@ public class BcpController {
             responseList = new ResponseList<>(ConstantsUtil.MENSAJE_ERROR_REQUEST(requestValidate), ConstantsUtil.PARAM_ESTADO_NOK, null);
             responseEntity = new ResponseEntity<ResponseList>(responseList, HttpStatus.BAD_REQUEST);
         }
-        Log log = new Log(rolRecursoService.obtUsuario(), "BCP REVERSION PAGO", request.getRequestURI(), responseList.getEstado() + " " + responseList.getMensaje(), "", null);
+        Log log = new Log(rolRecursoService.obtUsuario(), "BCP HISTORIAL PAGO", request.getRequestURI(), responseList.getEstado() + " " + responseList.getMensaje(), "", null);
         logService.save(log, request.getRequestURI(), responseList.toString());
         return responseEntity;
     }

@@ -11,7 +11,7 @@
     </resultMap>
 
     <select id="listAll" resultType="CdPerfil" resultMap="result">
-        select gbofinofi, trim(gbofidesc) as gbofidesc from gbofi where gbofinofi in (1,3,4,6,8,9,12,15);
+   select gbofinofi, trim(gbofidesc) as gbofidesc from gbofi where gbofinofi in (1,3,4,6,8,9,11,12,15);
     </select>
 
 </mapper>

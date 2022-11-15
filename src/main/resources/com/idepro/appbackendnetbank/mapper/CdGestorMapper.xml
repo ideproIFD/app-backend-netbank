@@ -6,21 +6,26 @@
 <mapper namespace="com.idepro.appbackendnetbank.repository.CdGestorRepository">
 
     <resultMap type="CdGestor" id="result">
-        <result property="idGestor" column="gbfircfun"/>
-        <result property="nombre" column="gbfirnomb"/>
-        <result property="idAgencia" column="gbfiragen"/>
-        <result property="usuario" column="adusrusrn"/>
-        <result property="idPerfil" column="adusrperf"/>
+        <result property="idGestor" column="codigo_de_firma"/>
+        <result property="nombre" column="nombre"/>
+        <result property="idAgencia" column="agencia"/>
+        <result property="usuario" column="codigo_usuario"/>
+        <result property="idPerfil" column="perfil"/>
     </resultMap>
 
     <select id="listAll" resultType="CdGestor" resultMap="result">
-        select gbfircfun, trim(upper(gbfirnomb)) as gbfirnomb, case when gbfiragen = 1 then null else gbfiragen end as gbfiragen, trim(adusrusrn) as adusrusrn,
-        case
+        select
+        gbfircfun codigo_de_firma
+        ,trim(upper(gbfirnomb)) nombre
+        ,(case when gbfiragen = 1 then null else gbfiragen end ) agencia
+        ,trim(adusrusrn) codigo_usuario
+        ,(case
         when adusrperf in ('GS1','JA1','JA2','JA3') then 'GS-JA'
         when adusrperf in ('GC1','GC2','OF1','OF2','OF3') then 'ON-GC'
         when adusrperf in ('NG1','SG1','SG2') then 'GNN'
-        else '' end as adusrperf
-        from gbfir inner join adusr on gbfirusrn = adusrusrn where adusrperf in ('GC1','GC2','GS1','JA1','JA3','OF1','OF2','OF3','SG1','SG2','NG1') and adusrmrcb = 0
+        else '' end ) perfil
+        from gbfir inner join adusr on gbfirusrn = adusrusrn where adusrperf in ('GC1','GC2','GS1','JA1','JA3','OF1','OF2','OF3','SG1','SG2','NG1')
+        and adusrmrcb = 0
         union
         select adusrcage as gbfircfun, trim(upper(adusrnomb))as gbfirnomb,case when adusragen = 1 then null else adusragen end as gbfiragen,
         trim(adusrusrn) as adusrusrn, 'TIC' as adusrperf
@@ -28,13 +33,18 @@
     </select>
 
     <select id="findByIdGestor" resultType="CdGestor" resultMap="result">
-        select gbfircfun, trim(upper(gbfirnomb)) as gbfirnomb, case when gbfiragen = 1 then null else gbfiragen end as gbfiragen, trim(adusrusrn) as adusrusrn,
-        case
-        when adusrperf in ('GS1','JA1','JA2','JA3') then 'GS-JA'
+        select
+        gbfircfun codigo_de_firma
+        ,trim(upper(gbfirnomb)) nombre
+        ,(case when gbfiragen = 1 then null else gbfiragen end ) agencia
+        ,trim(adusrusrn) codigo_usuario
+        ,(case
+         when adusrperf in ('GS1','JA1','JA2','JA3') then 'GS-JA'
         when adusrperf in ('GC1','GC2','OF1','OF2','OF3') then 'ON-GC'
         when adusrperf in ('NG1','SG1','SG2') then 'GNN'
-        else '' end as adusrperf
-        from gbfir inner join adusr on gbfirusrn = adusrusrn where adusrperf in ('GC1','GC2','GS1','JA1','JA3','OF1','OF2','OF3','SG1','SG2','NG1') and adusrmrcb = 0
+        else '' end ) perfil
+        from gbfir inner join adusr on gbfirusrn = adusrusrn where adusrperf in ('GC1','GC2','GS1','JA1','JA3','OF1','OF2','OF3','SG1','SG2','NG1')
+        and adusrmrcb = 0
         union
         select adusrcage as gbfircfun, trim(upper(adusrnomb))as gbfirnomb,case when adusragen = 1 then null else adusragen end as gbfiragen,
         trim(adusrusrn) as adusrusrn, 'TIC' as adusrperf

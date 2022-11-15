@@ -26,7 +26,6 @@ public class CdCredito {
     private String fechaDesembolso;
     @JsonProperty("fecha_vencimiento")
     private String fechaVencimiento;
-
     @JsonProperty("saldo_normal")
     private BigDecimal saldoNormal;
     @JsonProperty("saldo_diferido")
@@ -54,4 +53,6 @@ public class CdCredito {
     @JsonProperty("id_estado")
     private Integer idEstado;
     private String estado;
+    @JsonProperty("etiqueta_cartera")
+    private String etiquetaCartera;
 }

@@ -26,16 +26,18 @@
     </select>
 
     <select id="listAll" resultType="CdAgencia" resultMap="result">
-        select gbofinofi, trim(gbofidesc) as gbofidesc,
+      select
+        gbofinofi, trim(gbofidesc) as gbofidesc,
         (case
-        when gbofinofi in (1) then 1
+        when gbofinofi in (1,2) then 1
         when gbofinofi in (3) then 3
         when gbofinofi in (5,4,26) then 4
         when gbofinofi in (6) then 6
         when gbofinofi in (8,20) then 8
-        when gbofinofi in (9,10,11,19,23) then 9
-        when gbofinofi in (12,13,14,21,22,27) then 12
-        when gbofinofi in (15,16,17,18) then 15 else 0 end)as gbofinsuc
+        when gbofinofi in (9,10,19) then 9
+        when gbofinofi in (7,11,14,23) then 23
+        when gbofinofi in (12,13,21,22,27,28) then 12
+        when gbofinofi in (15,16,17,18) then 15 else 0 end) as gbofinsuc
         from gbofi;
     </select>
 

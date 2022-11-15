@@ -6,16 +6,20 @@
 <mapper namespace="com.idepro.appbackendnetbank.repository.CdFiadorAsignadoRepository">
 
     <resultMap type="CdFiadorAsignado" id="result">
-        <result property="idFiador" column="prdeucage"/>
-        <result property="idCredito" column="prdeunpre"/>
-        <result property="tipoFiador" column="tipo"/>
+        <result property="idFiador" column="agenda"/>
+        <result property="idCredito" column="prestamo"/>
+        <result property="tipoFiador" column="tipo_deudor"/>
     </resultMap>
 
     <select id="listAll" resultType="CdFiadorAsignado" resultMap="result">
-        select prdeucage, prdeunpre,
-        case when prdeutres = 2 then 'GARANTE' when prdeutres = 1 then 'CODEUDOR' end as tipo
-        from prdeu where prdeunpre in (select prmprnpre from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701))
-        and prdeucage not in (select prmprcage from prmpr where prmprnpre in (select prmprnpre from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701)));
+          select
+        prdeucage agenda
+        ,prdeunpre prestamo
+        ,(case when prdeutres = 2 then 'GARANTE' when prdeutres = 1 then 'CODEUDOR' end)  tipo_deudor
+        from prdeu,prmpr
+        where prdeunpre=prmprnpre
+        and prmprstat not in (0,1,7,9) and nvl((select gbpmtfdia from gbpmt)-prmprfinc,0)>0
+        and prdeucage &lt;&gt; prmprcage
     </select>
 
 </mapper>

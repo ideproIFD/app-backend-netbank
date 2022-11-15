@@ -47,6 +47,8 @@
         <mapper resource="com/idepro/appbackendnetbank/mapper/BcpClienteMapper.xml"/>
         <mapper resource="com/idepro/appbackendnetbank/mapper/BcpTransaccionesMapper.xml"/>
 
+        <mapper resource="com/idepro/appbackendnetbank/mapper/SegMiVidaMapper.xml"/>
+
         <mapper resource="com/idepro/appbackendnetbank/mapper/LogMapper.xml"/>
     </mappers>
 </configuration>

@@ -6,30 +6,36 @@
 <mapper namespace="com.idepro.appbackendnetbank.repository.CdClienteRepository">
 
     <resultMap type="CdCliente" id="result">
-        <result property="idCliente" column="gbagecage"/>
+        <result property="idCliente" column="agenda"/>
         <result property="nombre" column="nombre"/>
         <result property="telefono" column="telefono"/>
-        <result property="direccion" column="direccion"/>
+        <result property="direccion" column="direccion_domicilio"/>
         <result property="latitud" column="latitud"/>
         <result property="longitud" column="longitud"/>
     </resultMap>
 
     <select id="findByIdCliente" resultType="CdCliente" resultMap="result">
-        select gbagecage, trim(gbagenomb) nombre,
-        case when gbagetlfd is not null then trim(gbagetlfd) else trim(gbdaccelu) end as telefono,
-        trim(case when gbageddo1 is null then '' else gbageddo1 end||case when gbageddo2 is null then '' else gbageddo2 end) direccion,
-        (select max(gbdirlati) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage) as latitud,
-        (select max(gbdirlong) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage) as longitud
-        from gbage inner join gbdac on gbagecage = gbdaccage where gbagecage in (select prmprcage from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701)) and gbagecage = #{param1};
+select
+        gbagecage agenda
+        ,trim(gbagenomb) nombre
+        ,(case when trim(gbdaccelu) is not null then trim(gbdaccelu) else trim(gbagetlfd)  end)  telefono
+        ,trim((case when gbageddo1 is null then '' else gbageddo1 end) || (case when gbageddo2 is null then '' else gbageddo2 end)) direccion_domicilio
+        ,(select max(gbdirlati) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage)  latitud
+        ,(select max(gbdirlong) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage)  longitud
+        from gbage inner join gbdac on gbagecage = gbdaccage where gbagecage in (select prmprcage from prmpr where prmprstat not in (0,1,7,9)
+        and nvl((select gbpmtfdia from gbpmt)-prmprfinc,0)>0) and gbagecage = #{param1};
     </select>
 
     <select id="listAll" resultType="CdCliente" resultMap="result">
-        select gbagecage, trim(gbagenomb) nombre,
-        case when gbagetlfd is not null then trim(gbagetlfd) else trim(gbdaccelu) end as telefono,
-        trim(case when gbageddo1 is null then '' else gbageddo1 end||case when gbageddo2 is null then '' else gbageddo2 end) direccion,
-        (select max(gbdirlati) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage) as latitud,
-        (select max(gbdirlong) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage) as longitud
-        from gbage inner join gbdac on gbagecage = gbdaccage where gbagecage in (select prmprcage from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701));
+        select
+        gbagecage agenda
+        ,trim(gbagenomb) nombre
+        ,(case when trim(gbdaccelu) is not null then trim(gbdaccelu) else trim(gbagetlfd)  end)  telefono
+        ,trim((case when gbageddo1 is null then '' else gbageddo1 end) || (case when gbageddo2 is null then '' else gbageddo2 end)) direccion_domicilio
+        ,(select max(gbdirlati) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage)  latitud
+        ,(select max(gbdirlong) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage)  longitud
+        from gbage inner join gbdac on gbagecage = gbdaccage where gbagecage in (select prmprcage from prmpr where prmprstat not in (0,1,7,9)
+        and nvl((select gbpmtfdia from gbpmt)-prmprfinc,0)>0);
     </select>
 
 </mapper>

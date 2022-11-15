@@ -6,80 +6,230 @@
 <mapper namespace="com.idepro.appbackendnetbank.repository.CdCreditoRepository">
 
     <resultMap type="CdCredito" id="result">
-        <result property="idCredito" column="prmprnpre"/>
-        <result property="idCliente" column="prmprcage"/>
-        <result property="pagoParaEstarAlDia" column="pagoParaEstarAlDia"/>
-        <result property="valorCuota" column="valorCuota"/>
-        <result property="diasCapitalMora" column="diasCapitalMora"/>
-        <result property="fechaOtorgado" column="prmprfreg"/>
-        <result property="fechaDesembolso" column="prmprfdes"/>
-        <result property="fechaVencimiento" column="fechaVencimiento"/>
-        <result property="saldoNormal" column="saldoNormal"/>
-        <result property="saldoDiferido" column="saldoDiferido"/>
-        <result property="saldoTotal" column="saldoTotal"/>
-        <result property="montoOtorgado" column="prmprmdes"/>
-        <result property="capitalMora" column="capitalMora"/>
-        <result property="ultimaFechaPago" column="prmprfulp"/>
-        <result property="plazo" column="prmprplzo"/>
-        <result property="frecuencia" column="prmprppgk"/>
-        <result property="cantidadCoutas" column="cantidadCoutas"/>
-        <result property="idLineaCredito" column="prmprtcre"/>
-        <result property="tasaInteres" column="tasaInteres"/>
-        <result property="idAgencia" column="prmpragen"/>
+        <result property="idCredito" column="prestamo"/>
+        <result property="idCliente" column="agenda"/>
+        <result property="pagoParaEstarAlDia" column="pago_al_dia_bs"/>
+        <result property="valorCuota" column="valor_cuota_bs"/>
+        <result property="diasCapitalMora" column="dias_Mora"/>
+        <result property="fechaOtorgado" column="fecha_registro"/>
+        <result property="fechaDesembolso" column="fecha_desembolso"/>
+        <result property="fechaVencimiento" column="fecha_incumplimiento"/>
+        <result property="saldoNormal" column="saldo_No_Diferido_bs"/>
+        <result property="saldoDiferido" column="saldo_diferido_bs"/>
+        <result property="saldoTotal" column="saldo_total"/>
+        <result property="montoOtorgado" column="monto_desembolsado_bs"/>
+        <result property="capitalMora" column="capital_mora"/>
+        <result property="ultimaFechaPago" column="fecha_Ult_pago"/>
+        <result property="plazo" column="plazo_meses"/>
+        <result property="frecuencia" column="frecuencia_pago_capital_meses"/>
+        <result property="cantidadCuotas" column="cantidad_cuotas"/>
+        <result property="idLineaCredito" column="tipo_credito"/>
+        <result property="tasaInteres" column="tasa_Interes"/>
+        <result property="idAgencia" column="agencia"/>
         <result property="notaCliente" column="notaCliente"/>
-        <result property="idEstado" column="prmprstat"/>
+        <result property="idEstado" column="cod_estado"/>
         <result property="estado" column="estado"/>
+        <result property="etiquetaCartera" column="etiqueta_cartera"/>
     </resultMap>
 
     <select id="listAll" resultType="CdCredito" resultMap="result">
-select prmprnpre, prmprcage, (select max(idpctacuot) * (case when prmprcmon = 1 then 1 when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 0 end) from idpcta where idpctafpro = today and idpctanpre = prmprnpre) as pagoParaEstarAlDia,
-        (select prppgtota from prppg where prppgnpre = prmprnpre and prppgfech in (select min(prppgfech) from prppg where prppgfech >= (select gbpmtfdia from gbpmt) and prppgnpre = prmprnpre)) as valorCuota,
-        case when prmprfinc is null then 0 else (select gbpmtfdia from gbpmt) - prmprfinc end as diasCapitalMora,
-        prmprfreg, prmprfdes,
-        (select min(prppgfech) from prppg where prppgfech >= today and prppgnpre = prmprnpre) as fechaVencimiento,
-        round((case
-        when prmprcmon = 1 then prmprsald
-        when prmprcmon = 2 then prmprsald * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2) as saldoNormal,
-        round((case
-        when prmprcmon = 1 then (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end)
-        when prmprcmon = 2 then (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end) * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2) as saldoDiferido,
-        round((case
-        when prmprcmon = 1 then (prmprsald + (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end))
-        when prmprcmon = 2 then (prmprsald + (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end)) * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2) as saldoTotal,
-        round((case
-        when prmprcmon = 1 then prmprmdes
-        when prmprcmon = 2 then prmprmdes * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2) as prmprmdes,
-        (select case when sum(prppgcapi) is null then 0 else sum(prppgcapi) * (case when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 1 end) end from prppg where prppgnpre = prmprnpre and prppgfech &lt;= (select gbpmtfdia from gbpmt)) - (select case when sum(prtdtimpp) is null then 0 else abs(sum(prtdtimpp) * (case when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 1 end)) end from prtdt where prtdtnpre = prmprnpre and prtdtttrn = 2 and prtdtccon = 1 and prtdtmrcb = 0) as capitalMora,
-        prmprfulp, round((prmprplzo / 30),2)as prmprplzo, round((prmprppgk / 30),2)as prmprppgk, (select count(*) from prppg where prppgnpre = prmprnpre) as cantidadCuotas, prmprtcre,
-        (select max(prtsatbas) from prtsa where prtsanpre = prmprnpre and prtsafpro = (select max(prtsafpro) from prtsa where prtsanpre = prmprnpre)) as tasaInteres,
-        prmpragen, '' as notaCliente, prmprstat, case when prmprstat in (2,3,4) and prmprfinc is null then 'VIGENTE AL DIA' when prmprstat in (2,3,4) and prmprfinc is not null then 'VIGENTE' when prmprstat = 5 then 'VENCIDO' when prmprstat = 6 then 'EJECUCION' when prmprstat = 7 then 'CASTIGADO' else prmprstat||'' end as estado
-        from prmpr where prmprstat in (2,3,4,5,6) and prmprtcre not in (601,701);
+select
+prmprnpre prestamo
+,prmprcage agenda
+,nvl((select round((case when prmprcmon=1 then idpctacuot else idpctacuot*(select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2)
+from idpcta where idpctanpre=prmprnpre),0) pago_al_dia_bs
+,(case when (select round((case when prmprcmon=1 then prppgtota else prppgtota*(select gbhtctcof from gbhtc
+where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2)  from prppg where prppgnpre = prmprnpre and prppgfech =prmprfinc) is null
+then
+(select sum(round((case when prmprcmon=1 then prdipcuot else prdipcuot*(select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2))
+from prdip where prdipnpre=prmprnpre and prdipcarg in (67,68,69,70,75,76,80,71,72,73,74,77,78,81,85,86,87,88,89,91,92) and prdipfpag=prmprfinc)
+else
+nvl((select round((case when prmprcmon=1 then prppgtota else prppgtota*(select gbhtctcof from gbhtc
+where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2)  from prppg where prppgnpre = prmprnpre and prppgfech =prmprfinc),0)
+end)
+valor_cuota_bs
+,nvl((select gbpmtfdia from gbpmt)-prmprfinc,0) dias_Mora
+,prmprfreg fecha_registro
+,prmprfdes fecha_desembolso
+,prmprfinc fecha_incumplimiento
+,nvl(round((case
+when prmprcmon = 1 then prmprsald
+when prmprcmon = 2 then prmprsald * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2),0) saldo_No_Diferido_bs
+,nvl((select round((case
+when prmprcmon=1 then prdifsald
+when prmprcmon=2 then prdifsald*(select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end ),2)
+from prdif where prdifmrcb=0 and prdifcarg in (67, 68, 69, 70, 75, 76, 80) and prdifnpre=prmprnpre),0) saldo_diferido_bs
+,(
+nvl(round((case
+when prmprcmon = 1 then prmprsald
+when prmprcmon = 2 then prmprsald * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2),0) +
+nvl((select round((case
+when prmprcmon=1 then prdifsald
+when prmprcmon=2 then prdifsald*(select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end ),2)
+from prdif where prdifmrcb=0 and prdifcarg in (67, 68, 69, 70, 75, 76, 80) and prdifnpre=prmprnpre),0)) saldo_total
+
+,round((case
+when prmprcmon = 1 then prmprmdes
+when prmprcmon = 2 then prmprmdes * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2) monto_desembolsado_bs
+
+,(nvl((select sum(
+round(
+(
+case when prmprcmon=1 then prppgcapi else prppgcapi*(select gbhtctcof from gbhtc where gbhtcfech=(select max(gbhtcfech) from gbhtc)) end),2)
+)
+from prppg where prppgnpre=prmprnpre and prppgfech&lt;=(select gbpmtfdia from gbpmt)),0) +
+nvl((select sum(round((case when prmprcmon=1 then prdipcuot else prdipcuot*(select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2))
+from prdip where prdipnpre=prmprnpre and prdipcarg in (67,68,69,70,75,76,80) and prdipfpag&lt;=(select gbpmtfdia from gbpmt)),0)
+-
+nvl(
+(
+select
+round(sum(case when prmprcmon=1 then prtdtimpp else prtdtimpp*
+(select gbhtctcof from gbhtc where gbhtcfech=(select max(gbhtcfech) from gbhtc)) end),2)*-1  monto_pago_capital_bs
+from prtdt where
+prtdtftra&lt;=(select gbpmtfdia from gbpmt) and
+prtdtnpre=prmprnpre and
+prtdtttrn=2   and
+prtdtccon in (1)   and
+prtdtpref in (20,21)  and
+prtdtmrcb=0),0)
+
+-
+nvl(
+(
+select
+round(sum(case when prmprcmon=1 then prtdtimpp else prtdtimpp*
+(select gbhtctcof from gbhtc where gbhtcfech=(select max(gbhtcfech) from gbhtc)) end),2)*-1  monto_pago_capital_bs
+from prtdt where
+prtdtftra&lt;=(select gbpmtfdia from gbpmt) and
+prtdtnpre=prmprnpre and
+prtdtttrn=2   and
+prtdtccon in (67,68,69,70,75,76,80)   and
+prtdtpref in (20,21)  and
+prtdtmrcb=0),0)
+
+) capital_mora
+,prmprfulp fecha_Ult_pago
+,floor(prmprplzo/30) plazo_meses
+,floor(prmprppgk/30) frecuencia_pago_capital_meses
+,(select count(*) from prppg where prppgnpre = prmprnpre)  cantidad_cuotas
+,prmprtcre tipo_credito
+,(tbas+tspr) tasa_Interes
+,prmpragen agencia
+, '' notaCliente
+,prmprstat cod_estado
+,(select trim(prcondesc) from prcon where prconpref=4 and prconcorr=prmprstat) estado
+,
+(case when
+(select max(prsornpre) from prsor where prsorstat=2 and prsornpre=prmprnpre) is not null then 'CARTERA 669'
+else
+'CARTERA NORMAL'
+end) etiqueta_cartera
+from prmpr,taspret_vi where
+prmprnpre=npre and
+prmprstat not in (0,1,7,9)
+and nvl((select gbpmtfdia from gbpmt)-prmprfinc,0)>0
+order by prmprnpre;
     </select>
 
     <select id="findByIdCredito" resultType="CdCredito" resultMap="result">
-        select prmprnpre, prmprcage, (select max(idpctacuot) * (case when prmprcmon = 1 then 1 when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 0 end) from idpcta where idpctafpro = today and idpctanpre = prmprnpre) as pagoParaEstarAlDia,
-        (select prppgtota from prppg where prppgnpre = prmprnpre and prppgfech in (select min(prppgfech) from prppg where prppgfech >= (select gbpmtfdia from gbpmt) and prppgnpre = prmprnpre)) as valorCuota,
-        case when prmprfinc is null then 0 else (select gbpmtfdia from gbpmt) - prmprfinc end as diasCapitalMora,
-        prmprfreg, prmprfdes,
-        (select min(prppgfech) from prppg where prppgfech >= today and prppgnpre = prmprnpre) as fechaVencimiento,
-        round((case
-        when prmprcmon = 1 then prmprsald
-        when prmprcmon = 2 then prmprsald * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2) as saldoNormal,
-        round((case
-        when prmprcmon = 1 then (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end)
-        when prmprcmon = 2 then (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end) * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2) as saldoDiferido,
-        round((case
-        when prmprcmon = 1 then (prmprsald + (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end))
-        when prmprcmon = 2 then (prmprsald + (case when (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) is null then 0 else (select prdifsald from prdif where prdifnpre = prmprnpre and prdifcarg in (67,68,69,70)) end)) * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2) as saldoTotal,
-        round((case
-        when prmprcmon = 1 then prmprmdes
-        when prmprcmon = 2 then prmprmdes * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2) as prmprmdes,
-        (select case when sum(prppgcapi) is null then 0 else sum(prppgcapi) * (case when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 1 end) end from prppg where prppgnpre = prmprnpre and prppgfech &lt;= (select gbpmtfdia from gbpmt)) - (select case when sum(prtdtimpp) is null then 0 else abs(sum(prtdtimpp) * (case when prmprcmon = 2 then (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) else 1 end)) end from prtdt where prtdtnpre = prmprnpre and prtdtttrn = 2 and prtdtccon = 1 and prtdtmrcb = 0) as capitalMora,
-        prmprfulp, round((prmprplzo / 30),2)as prmprplzo, round((prmprppgk / 30),2)as prmprppgk, (select count(*) from prppg where prppgnpre = prmprnpre) as cantidadCuotas, prmprtcre,
-        (select max(prtsatbas) from prtsa where prtsanpre = prmprnpre and prtsafpro = (select max(prtsafpro) from prtsa where prtsanpre = prmprnpre)) as tasaInteres,
-        prmpragen, '' as notaCliente, prmprstat, case when prmprstat in (2,3,4) and prmprfinc is null then 'VIGENTE AL DIA' when prmprstat in (2,3,4) and prmprfinc is not null then 'VIGENTE' when prmprstat = 5 then 'VENCIDO' when prmprstat = 6 then 'EJECUCION' when prmprstat = 7 then 'CASTIGADO' else prmprstat||'' end as estado
-        from prmpr where prmprstat in (2,3,4,5,6) and prmprtcre not in (601,701)
-        and prmprnpre = #{param1};
+select     first 10
+prmprnpre prestamo
+,prmprcage agenda
+,nvl((select round((case when prmprcmon=1 then idpctacuot else idpctacuot*(select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2)
+from idpcta where idpctanpre=prmprnpre),0) pago_al_dia_bs
+,(case when (select round((case when prmprcmon=1 then prppgtota else prppgtota*(select gbhtctcof from gbhtc
+where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2)  from prppg where prppgnpre = prmprnpre and prppgfech =prmprfinc) is null
+then
+(select sum(round((case when prmprcmon=1 then prdipcuot else prdipcuot*(select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2))
+from prdip where prdipnpre=prmprnpre and prdipcarg in (67,68,69,70,75,76,80,71,72,73,74,77,78,81,85,86,87,88,89,91,92) and prdipfpag=prmprfinc)
+else
+nvl((select round((case when prmprcmon=1 then prppgtota else prppgtota*(select gbhtctcof from gbhtc
+where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2)  from prppg where prppgnpre = prmprnpre and prppgfech =prmprfinc),0)
+end)
+valor_cuota_bs
+,nvl((select gbpmtfdia from gbpmt)-prmprfinc,0) dias_Mora
+,prmprfreg fecha_registro
+,prmprfdes fecha_desembolso
+,prmprfinc fecha_incumplimiento
+,nvl(round((case
+when prmprcmon = 1 then prmprsald
+when prmprcmon = 2 then prmprsald * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2),0) saldo_No_Diferido_bs
+,nvl((select round((case
+when prmprcmon=1 then prdifsald
+when prmprcmon=2 then prdifsald*(select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end ),2)
+from prdif where prdifmrcb=0 and prdifcarg in (67, 68, 69, 70, 75, 76, 80) and prdifnpre=prmprnpre),0) saldo_diferido_bs
+,(
+nvl(round((case
+when prmprcmon = 1 then prmprsald
+when prmprcmon = 2 then prmprsald * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2),0) +
+nvl((select round((case
+when prmprcmon=1 then prdifsald
+when prmprcmon=2 then prdifsald*(select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end ),2)
+from prdif where prdifmrcb=0 and prdifcarg in (67, 68, 69, 70, 75, 76, 80) and prdifnpre=prmprnpre),0)) saldo_total
+
+,round((case
+when prmprcmon = 1 then prmprmdes
+when prmprcmon = 2 then prmprmdes * (select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end) ,2) monto_desembolsado_bs
+
+,(nvl((select sum(
+round(
+(
+case when prmprcmon=1 then prppgcapi else prppgcapi*(select gbhtctcof from gbhtc where gbhtcfech=(select max(gbhtcfech) from gbhtc)) end),2)
+)
+from prppg where prppgnpre=prmprnpre and prppgfech&lt;=(select gbpmtfdia from gbpmt)),0) +
+nvl((select sum(round((case when prmprcmon=1 then prdipcuot else prdipcuot*(select gbhtctcof from gbhtc where gbhtcfech = (select max(gbhtcfech) from gbhtc)) end),2))
+from prdip where prdipnpre=prmprnpre and prdipcarg in (67,68,69,70,75,76,80) and prdipfpag&lt;=(select gbpmtfdia from gbpmt)),0)
+-
+nvl(
+(
+select
+round(sum(case when prmprcmon=1 then prtdtimpp else prtdtimpp*
+(select gbhtctcof from gbhtc where gbhtcfech=(select max(gbhtcfech) from gbhtc)) end),2)*-1  monto_pago_capital_bs
+from prtdt where
+prtdtftra&lt;=(select gbpmtfdia from gbpmt) and
+prtdtnpre=prmprnpre and
+prtdtttrn=2   and
+prtdtccon in (1)   and
+prtdtpref in (20,21)  and
+prtdtmrcb=0),0)
+
+-
+nvl(
+(
+select
+round(sum(case when prmprcmon=1 then prtdtimpp else prtdtimpp*
+(select gbhtctcof from gbhtc where gbhtcfech=(select max(gbhtcfech) from gbhtc)) end),2)*-1  monto_pago_capital_bs
+from prtdt where
+prtdtftra&lt;=(select gbpmtfdia from gbpmt) and
+prtdtnpre=prmprnpre and
+prtdtttrn=2   and
+prtdtccon in (67,68,69,70,75,76,80)   and
+prtdtpref in (20,21)  and
+prtdtmrcb=0),0)
+
+) capital_mora
+,prmprfulp fecha_Ult_pago
+,floor(prmprplzo/30) plazo_meses
+,floor(prmprppgk/30) frecuencia_pago_capital_meses
+,(select count(*) from prppg where prppgnpre = prmprnpre)  cantidad_cuotas
+,prmprtcre tipo_credito
+,(tbas+tspr) tasa_Interes
+,prmpragen agencia
+, '' notaCliente
+,prmprstat cod_estado
+,(select prcondesc from prcon where prconpref=4 and prconcorr=prmprstat) estado
+,
+(case when
+(select max(prsornpre) from prsor where prsorstat=2 and prsornpre=prmprnpre) is not null then 'CARTERA 669'
+else
+'CARTERA NORMAL'
+end) etiqueta_cartera
+from prmpr,taspret_vi where
+prmprnpre=npre and
+prmprstat not in (0,1,7,9)
+and nvl((select gbpmtfdia from gbpmt)-prmprfinc,0)>0
+and prmprnpre = #{param1} order by prmprnpre;
     </select>
 
 </mapper>

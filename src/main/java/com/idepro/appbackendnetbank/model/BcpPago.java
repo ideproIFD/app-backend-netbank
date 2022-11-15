@@ -14,8 +14,10 @@ public class BcpPago {
     private String codigoBusqueda;
     @JsonProperty("id_transaccion_empresa")
     private BigDecimal idTransaccionEmpresa;
+//    @JsonProperty("id_transaccion_entidad")
+//    private String idTransaccionEntidad;
     @JsonProperty("id_transaccion_entidad")
-    private String idTransaccionEntidad;
+    private BigDecimal idTransaccionEntidad;
     @JsonProperty("razon_social")
     private String razonSocial;
     @JsonProperty("casa_matriz")

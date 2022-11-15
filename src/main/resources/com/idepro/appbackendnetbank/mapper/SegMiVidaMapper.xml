@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.idepro.appbackendnetbank.repository.SegOperacionRepository">
+
+    <resultMap type="SegMiVida" id="result">
+        <result property="numeroOperacionCrediticia" column="numero_operacion_crediticia"/>
+        <result property="nroTransaccion" column="nro_transaccion"/>
+        <result property="nroCuota" column="nro_cuota"/>
+        <result property="fechaPago" column="fecha_pago"/>
+        <result property="idCliente" column="id_cliente"/>
+        <result property="nroDocumento" column="nro_documento"/>
+        <result property="idCargo" column="id_cargo"/>
+        <result property="idMoneda" column="id_moneda"/>
+        <result property="monto" column="monto"/>
+    </resultMap>
+
+    <select id="findPorFechas" resultType="SegMiVida" resultMap="result">
+        select  prtdtnpre numero_operacion_crediticia,prtdtntra nro_transaccion,1 nro_cuota, to_char(prtdtftra, '%Y-%m-%d') as fecha_pago,prdeucage id_cliente,(select trim(gbagendid) from gbage where gbagecage=prdeucage) nro_documento,prtdtccon id_cargo, prtdtcmon id_moneda
+        ,prtdtimpp*-1 monto
+        from prtdt
+        inner join prmpr On prmpr.prmprnpre = prtdtnpre
+        inner join prdeu On prmpr.prmprnpre = prdeunpre
+        where prmpr.prmprstat in(2,3,4,5,6) and prmprmrcb = 0 and prtdtccon in(161,162) and prtdtftra between to_date(#{param1},'%d-%m-%Y') and to_date(#{param2},'%d-%m-%Y')
+        order by 1 desc
+    </select>
+</mapper>

@@ -8,16 +8,45 @@
     <resultMap type="CdHistorialPago" id="result">
         <result property="idCredito" column="prtdtnpre"/>
         <result property="fechaPago" column="prtdtftra"/>
-        <result property="monto" column="prtdtimpp"/>
+        <result property="monto" column="monto_pago_capital_bs"/>
     </resultMap>
 
     <select id="listAll" resultType="CdHistorialPago" resultMap="result">
-        select prtdtnpre, prtdtftra, abs(prtdtimpp) as prtdtimpp  from prtdt where prtdtttrn = 2 and prtdtpref = 20 and prtdtccon = 1 and prtdtmrcb = 0 and prtdtnpre in (select prmprnpre from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701));
+        select
+        prtdtnpre
+        ,prtdtftra
+        ,round(sum(case when prmprcmon=1 then prtdtimpp else prtdtimpp*
+        (select gbhtctcof from gbhtc where gbhtcfech=(select max(gbhtcfech) from gbhtc)) end),2)*-1  monto_pago_capital_bs
+        from prtdt,prhtr,prmpr where
+        prhtrntra=prtdtntra and
+        prhtrcvia &lt;&gt; 60 and
+        prtdtttrn=2   and
+        prtdtccon in (1,67,68,69,70,75,76,80)   and
+        prtdtpref in (20,21)  and
+        prtdtmrcb=0   and
+        prtdtnpre=prmprnpre and
+        prmprstat not in (0,1,7,9) and
+        nvl((select gbpmtfdia from gbpmt)-prmprfinc,0)>0
+        group by prtdtnpre,prtdtftra
     </select>
 
     <select id="listByFecha" resultType="CdHistorialPago" resultMap="result">
-        select prtdtnpre, prtdtftra, abs(prtdtimpp) as prtdtimpp  from prtdt
-        where prtdtttrn = 2 and prtdtpref = 20 and prtdtccon = 1 and prtdtmrcb = 0 and prtdtnpre in (select prmprnpre from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701)) and prtdtfpro = to_date(#{param1},"%d%m%Y");
+        select
+        prtdtnpre
+        ,prtdtftra
+        ,round(sum(case when prmprcmon=1 then prtdtimpp else prtdtimpp*
+        (select gbhtctcof from gbhtc where gbhtcfech=(select max(gbhtcfech) from gbhtc)) end),2)*-1  monto_pago_capital_bs
+        from prtdt,prhtr,prmpr where
+        prhtrntra=prtdtntra and
+        prhtrcvia &lt;&gt; 60 and
+        prtdtttrn=2   and
+        prtdtccon in (1,67,68,69,70,75,76,80)   and
+        prtdtpref in (20,21)  and
+        prtdtmrcb=0   and
+        prtdtnpre=prmprnpre and
+        prmprstat not in (0,1,7,9) and
+        nvl((select gbpmtfdia from gbpmt)-prmprfinc,0)>0
+         and prtdtfpro = to_date(#{param1},"%d%m%Y") group by prtdtnpre,prtdtftra;
     </select>
 
 </mapper>

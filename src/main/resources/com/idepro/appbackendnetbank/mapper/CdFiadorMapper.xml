@@ -6,7 +6,7 @@
 <mapper namespace="com.idepro.appbackendnetbank.repository.CdFiadorRepository">
 
     <resultMap type="CdCliente" id="result">
-        <result property="idCliente" column="gbagecage"/>
+        <result property="idCliente" column="agenda"/>
         <result property="nombre" column="nombre"/>
         <result property="telefono" column="telefono"/>
         <result property="direccion" column="direccion"/>
@@ -15,23 +15,38 @@
     </resultMap>
 
     <select id="findByIdCliente" resultType="CdCliente" resultMap="result">
-        select gbagecage, trim(gbagenomb) nombre, trim(gbagetlfd) telefono,
-        case when gbagetlfd is not null then trim(gbagetlfd) else trim(gbdaccelu) end as telefono,
-        trim(case when gbageddo1 is null then '' else gbageddo1 end||case when gbageddo2 is null then '' else gbageddo2 end) direccion,
-        (select max(gbdirlati) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage) as latitud,
-        (select max(gbdirlong) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage) as longitud
-        from gbage inner join gbdac on gbagecage = gbdaccage where gbagecage in (select prdeucage from prdeu where prdeunpre in (select prmprnpre from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701))
-        and prdeucage not in (select prmprcage from prmpr where prmprnpre in (select prmprnpre from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701)))) and gbagecage = #{param1};
+        select
+        distinct gbagecage agenda
+        ,trim(gbagenomb) nombre
+        ,(case when trim(gbdaccelu) is not null then trim(gbdaccelu) else trim(gbagetlfd)  end)  telefono
+        ,trim(case when gbageddo1 is null then '' else gbageddo1 end||case when gbageddo2 is null then '' else gbageddo2 end) direccion
+        ,(select max(gbdirlati) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage) as latitud
+        ,(select max(gbdirlong) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage) as longitud
+        from prdeu,prmpr,gbage,gbdac
+        where
+        gbdaccage=gbagecage and
+        prdeunpre=prmprnpre and
+        gbagecage=prdeucage and
+        prmprstat not in (0,1,7,9) and nvl((select gbpmtfdia from gbpmt)-prmprfinc,0)>0
+        and prdeucage &lt;&gt; prmprcage and gbagecage = #{param1};
     </select>
 
     <select id="listAll" resultType="CdCliente" resultMap="result">
-        select gbagecage, trim(gbagenomb) nombre, trim(gbagetlfd) telefono,
-        case when gbagetlfd is not null then trim(gbagetlfd) else trim(gbdaccelu) end as telefono,
-        trim(case when gbageddo1 is null then '' else gbageddo1 end||case when gbageddo2 is null then '' else gbageddo2 end) direccion,
-        (select max(gbdirlati) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage) as latitud,
-        (select max(gbdirlong) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage) as longitud
-        from gbage inner join gbdac on gbagecage = gbdaccage where gbagecage in (select prdeucage from prdeu where prdeunpre in (select prmprnpre from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701))
-        and prdeucage not in (select prmprcage from prmpr where prmprnpre in (select prmprnpre from prmpr where prmprstat in (2,3,4,5,6,7,8) and prmprtcre not in (601,701))));
+        select
+        distinct gbagecage agenda
+        ,trim(gbagenomb) nombre
+        ,trim(gbagetlfd) telefono
+       -- ,trim(gbdaccelu) telefono_1
+        ,trim(case when gbageddo1 is null then '' else gbageddo1 end||case when gbageddo2 is null then '' else gbageddo2 end) direccion
+        ,(select max(gbdirlati) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage) as latitud
+        ,(select max(gbdirlong) from gbdir where gbdirmrpi = 1 and gbdircage = gbagecage) as longitud
+        from prdeu,prmpr,gbage,gbdac
+        where
+        gbdaccage=gbagecage and
+        prdeunpre=prmprnpre and
+        gbagecage=prdeucage and
+        prmprstat not in (0,1,7,9) and nvl((select gbpmtfdia from gbpmt)-prmprfinc,0)>0
+        and prdeucage &lt;&gt; prmprcage
     </select>
 
 </mapper>

@@ -74,6 +74,7 @@ public class BcpConsultaServiceImpl  implements  BcpConsultaService{
         BcpPago bcpPago = new BcpPago();
         bcpPago.setCodigoBusqueda(requestInput.getCodigoBusqueda());
         bcpPago.setIdTransaccionEntidad(requestInput.getIdTransaccion());
+//        bcpPago.setIdTransaccionEntidad(requestInput.getIdTransaccion());
         cliente = bcpClienteService.findByIdPrestamo(Integer.parseInt(requestInput.getCodigoBusqueda()));
         ParametroDiario parametroDiario = parametroDiarioService.listParametroDiario();
         // Validacion fecha netbank
